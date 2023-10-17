@@ -197,7 +197,7 @@ typing-extensions==4.8.0
     #   typer
 uc-micro-py==1.0.2
     # via linkify-it-py
-urllib3==2.0.6
+urllib3==2.0.7
     # via requests
 uuid==1.30
     # via -r requirements.in
