@@ -205,7 +205,7 @@ uvicorn==0.23.2
     # via -r requirements.in
 wcwidth==0.2.8
     # via prettytable
-werkzeug==3.0.0
+werkzeug==3.0.1
     # via
     #   -r requirements.in
     #   flask
