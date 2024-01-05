@@ -91,7 +91,7 @@ jobs:
           chmod +x /usr/local/bin/canary
 
       - name: Validate container
-        run: canary validate --file canary-validator.yml $IMAGE_NAME:latest
+        run: canary validate --file canary-validator.yml nsls2api
         env:
           IMAGE_NAME: ${{ env.IMAGE_NAME }}
 
