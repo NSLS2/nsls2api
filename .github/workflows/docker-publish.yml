@@ -77,18 +77,18 @@ jobs:
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }},${{ env.IMAGE_NAME }}:latest
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-      - name: Look up images
-        run: docker image ls
 
       - name: Install Container Canary
         run: |
           curl -L https://github.com/NVIDIA/container-canary/releases/download/v0.2.1/canary_linux_amd64 > /usr/local/bin/canary
           chmod +x /usr/local/bin/canary
+
+     - name: Build Container for validation
+       run: docker build -t nsls2api .
 
       - name: Validate container
         run: canary validate --file canary-validator.yml nsls2api
