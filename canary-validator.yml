@@ -13,21 +13,21 @@ description: Validate that container image is operational.
 #  - name: ...
 #    value: 
 ports:
- - port: 31415
+ - port: 8080
    protocol: TCP
 volumes: []
 checks:
   - name: tcp
-    description: Is listening via TCP on port 31415
+    description: Is listening via TCP on port 8080
     probe:
       tcpSocket:
         port: 31415
   - name: http
-    description: Responds HTTP GET on port 31415 at route /
+    description: Responds HTTP GET on port 8080 at route /docs
     probe:
       httpGet:
-        path: /
-        port: 31415
+        path: /docs
+        port: 8080
       initialDelaySeconds: 5
       timeoutSeconds: 10
       failureThreshold: 3
