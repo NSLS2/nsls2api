@@ -113,7 +113,7 @@ pydantic-settings==2.1.0
     # via -r requirements.in
 pygments==2.17.2
     # via rich
-pymongo==4.6.1
+pymongo==4.6.3
     # via motor
 python-dotenv==1.0.1
     # via pydantic-settings

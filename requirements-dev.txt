@@ -147,7 +147,7 @@ pygments==2.17.2
     # via
     #   ipython
     #   rich
-pymongo==4.6.1
+pymongo==4.6.3
     # via bunnet
 pytest==8.0.0
     # via -r requirements-dev.in
