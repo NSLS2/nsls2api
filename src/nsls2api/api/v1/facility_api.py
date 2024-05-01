@@ -1,16 +1,19 @@
+from typing import Annotated
 import fastapi
+
+from fastapi import Depends
 
 from nsls2api.api.models.facility_model import (
     FacilityName,
     FacilityCyclesResponseModel,
     FacilityCurrentOperatingCycleResponseModel,
 )
+from nsls2api.infrastructure.security import validate_admin_role
 from nsls2api.services import proposal_service, facility_service
 
 router = fastapi.APIRouter()
 
 
-# TODO: Add back into schema when implemented.
 @router.get(
     "/facility/{facility}/cycles/current",
     response_model=FacilityCurrentOperatingCycleResponseModel,
@@ -29,6 +32,24 @@ async def get_current_operating_cycle(facility: FacilityName):
     # TODO: Maybe add a health check here
     # print("Are we healthy ? ")
     # print(await facility_service.is_healthy(facility.name))
+
+    response_model = FacilityCurrentOperatingCycleResponseModel(
+        facility=facility.name, cycle=current_cycle
+    )
+
+    return response_model
+
+@router.post("/facility/{facility}/cycles/current",
+    response_model=FacilityCurrentOperatingCycleResponseModel, dependencies=[Depends(validate_admin_role)],)
+async def set_current_operating_cycle(facility: FacilityName, cycle: str,):
+    current_cycle = await facility_service.set_current_operating_cycle(facility.name, cycle)
+    if current_cycle is None:
+        return fastapi.responses.JSONResponse(
+            {
+                "error": f"Failed to set the current operating cycle for facility {facility.name}"
+            },
+            status_code=404,
+        )
 
     response_model = FacilityCurrentOperatingCycleResponseModel(
         facility=facility.name, cycle=current_cycle

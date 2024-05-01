@@ -95,6 +95,43 @@ async def current_operating_cycle(facility: str) -> Optional[str]:
 
     return cycle.name
 
+async def set_current_operating_cycle(facility: str, cycle: str) -> Optional[str]:
+    """
+    Set Current Operating Cycle
+
+    This method sets the current operating cycle for a given facility.
+
+    :param facility: The facility name (str).
+    :param cycle: The cycle name (str).
+    :return: The current operating cycle (str) or None if no current operating cycle is found.
+    """
+    new_current_cycle = await Cycle.find_one(
+        Cycle.facility == facility,
+        Cycle.name == cycle,
+    )
+
+    if new_current_cycle is None:
+        return None
+
+    # Now find previous current operating cycle.
+    previous_cycle = await Cycle.find_one(
+        Cycle.facility == facility,
+        Cycle.is_current_operating_cycle == True,  # noqa: E712
+    )
+
+    if previous_cycle is not None:
+        await previous_cycle.set({Cycle.is_current_operating_cycle: False})
+
+    await new_current_cycle.set({Cycle.is_current_operating_cycle: True})
+
+    # Let's now check all is well with the world 
+    expected_current_cycle = await current_operating_cycle(facility)
+    if str(expected_current_cycle) != cycle:
+        logger.error(f"Failed to set the current operating cycle for {facility} to be {cycle}.")
+        return None
+
+    return expected_current_cycle
+
 
 async def is_healthy(facility: str) -> bool:
     """

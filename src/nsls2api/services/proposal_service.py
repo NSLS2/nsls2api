@@ -80,6 +80,11 @@ async def fetch_proposals_for_cycle(cycle: str) -> list[str]:
     cycle = await Cycle.find_one(Cycle.name == cycle)
     if cycle is None:
         raise LookupError(f"Cycle {cycle} not found")
+
+    # In case a 'None' has crept into the database
+    if cycle.proposals is None:
+        return []
+
     return cycle.proposals
 
 
@@ -549,7 +554,7 @@ async def synchronize_proposal_from_pass(proposal_id: int) -> None:
         user_list.append(pi_info)
 
     data_session = generate_data_session_for_proposal(proposal_id)
-        
+
     proposal = Proposal(
         proposal_id=str(pass_proposal.Proposal_ID),
         title=pass_proposal.Title,
@@ -643,12 +648,13 @@ async def worker_update_cycle_information(
 ) -> None:
     start_time = datetime.datetime.now()
 
-    #TODO: Add test that cycle and facility combination is valid
-
+    # TODO: Add test that cycle and facility combination is valid
 
     if cycle:
         # If we've specified a cycle then only sync that one
-        cycles = await Cycle.find(Cycle.name == str(cycle), Cycle.facility == facility).to_list()
+        cycles = await Cycle.find(
+            Cycle.name == str(cycle), Cycle.facility == facility
+        ).to_list()
     else:
         cycles = await Cycle.find(Cycle.facility == facility).to_list()
 
