@@ -190,7 +190,7 @@ urllib3==2.2.1
     # via requests
 wcwidth==0.2.13
     # via prompt-toolkit
-werkzeug==3.0.2
+werkzeug==3.0.3
     # via
     #   flask
     #   flask-login
