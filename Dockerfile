@@ -6,7 +6,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip wheel
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
-COPY . . 
+COPY . .
 RUN pip install '.'
 
 CMD ["uvicorn", "nsls2api.main:app", "--proxy-headers", \ 

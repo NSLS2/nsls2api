@@ -1,0 +1,33 @@
+# This is used to verify that a container image has the basic expected behavior.
+# See https://github.com/NVIDIA/container-canary
+#
+# Run locally like:
+#
+# canary validate --file canary-validator.yml ghcr.io/bluesky/tiled:latest
+
+apiVersion: container-canary.nvidia.com/v2
+kind: Validator
+name: nsls2api
+description: Validate that container image is operational.
+# env:
+#  - name: ...
+#    value: 
+ports:
+ - port: 8080
+   protocol: TCP
+volumes: []
+checks:
+  - name: tcp
+    description: Is listening via TCP on port 8080
+    probe:
+      tcpSocket:
+        port: 31415
+  - name: http
+    description: Responds HTTP GET on port 8080 at route /docs
+    probe:
+      httpGet:
+        path: /docs
+        port: 8080
+      initialDelaySeconds: 5
+      timeoutSeconds: 10
+      failureThreshold: 3
