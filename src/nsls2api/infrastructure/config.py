@@ -1,3 +1,4 @@
+import os
 from functools import lru_cache
 from pathlib import Path
 
@@ -39,16 +40,17 @@ class Settings(BaseSettings):
     settings.bnlroot_ca_certs_file = "/path/to/ca_certs.pem"
     """
 
-    pass_api_key: str
-    pass_api_url: HttpUrl = "https://passservices.bnl.gov/passapi"
+    # Active Directory settings
     active_directory_server: str
     active_directory_server_list: str
     n2sn_user_search: str
     n2sn_group_search: str
     bnlroot_ca_certs_file: str
-    mongodb_dsn: MongoDsn
-    # mongodb_dsn: MongoDsn = "mongodb://localhost:27017/nsls2core-test"
 
+    # MongoDB settings
+    mongodb_dsn: MongoDsn
+
+    # Proxy settings
     use_socks_proxy: bool = False
     socks_proxy: str
 
@@ -57,6 +59,10 @@ class Settings(BaseSettings):
     superadmin_slack_user_token: str | None = ""
     slack_signing_secret: str | None = ""
     nsls2_workspace_team_id: str | None = ""
+
+    # PASS settings
+    pass_api_key: str
+    pass_api_url: HttpUrl = "https://passservices.bnl.gov/passapi"
 
     # Universal Proposal System
     universal_proposal_system_api_url: HttpUrl = "https://ups.servicenowservices.com/api"
@@ -76,4 +82,9 @@ def get_settings() -> Settings:
 
     :returns: The dictionary of current settings.
     """
-    return Settings()
+    if os.environ.get("PYTEST_VERSION") is not None:
+        settings = Settings(_env_file=str(Path(__file__).parent.parent / "pytest.env"))
+    else:
+        settings = Settings()
+
+    return settings

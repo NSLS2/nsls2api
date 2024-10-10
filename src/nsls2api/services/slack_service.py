@@ -7,12 +7,18 @@ from nsls2api.infrastructure.logging import logger
 from nsls2api.models.slack_models import SlackBot
 
 settings = get_settings()
-app = App(token=settings.slack_bot_token, signing_secret=settings.slack_signing_secret)
-super_app = App(
-    token=settings.superadmin_slack_user_token,
-    signing_secret=settings.slack_signing_secret,
-)
 
+# def get_super_app() -> App:
+#     return App(
+#     token=settings.superadmin_slack_user_token,
+#     signing_secret=settings.slack_signing_secret,
+# )
+
+def get_boring_app() -> App:
+    return App(
+        token=settings.slack_bot_token,
+        signing_secret=settings.slack_signing_secret,
+    )
 
 def get_bot_details() -> SlackBot:
     """
@@ -21,7 +27,7 @@ def get_bot_details() -> SlackBot:
     Returns:
         SlackBot: An instance of the SlackBot class containing the bot details.
     """
-    response = app.client.auth_test()
+    response = get_boring_app().client.auth_test()
 
     return SlackBot(
         username=response.data["user"],
@@ -43,7 +49,7 @@ def get_channel_members(channel_id: str) -> list[str]:
         list[str]: A list of member IDs in the channel.
     """
     try:
-        response = app.client.conversations_members(channel=channel_id)
+        response = get_boring_app().client.conversations_members(channel=channel_id)
     except SlackApiError as error:
         logger.exception(error)
         return []
@@ -98,7 +104,7 @@ async def is_channel_private(channel_id: str) -> bool:
     Returns:
         bool: True if the channel is private, False otherwise.
     """
-    response = await app.client.conversations_info(channel=channel_id)
+    response = get_boring_app().client.conversations_info(channel=channel_id)
     return response.data["channel"]["is_private"]
 
 
@@ -211,7 +217,7 @@ def rename_channel(name: str, new_name: str) -> str | None:
     if channel_id is None:
         raise Exception(f"Channel {name} not found.")
 
-    response = app.client.conversations_rename(channel=channel_id, name=new_name)
+    response = get_boring_app().client.conversations_rename(channel=channel_id, name=new_name)
 
     if response.data["ok"] is not True:
         raise Exception(f"Failed to rename channel {name} to {new_name}")
@@ -232,7 +238,7 @@ def lookup_userid_by_email(email: str) -> str | None:
     Returns:
         str | None: The user ID if found, None otherwise.
     """
-    response = app.client.users_lookupByEmail(email=email)
+    response = get_boring_app().client.users_lookupByEmail(email=email)
     if response.data["ok"] is True:
         return response.data["user"]["id"]
 
@@ -247,7 +253,7 @@ def lookup_username_by_email(email: str) -> str | None:
     Returns:
         str | None: The username associated with the email address, or None if not found.
     """
-    response = app.client.users_lookupByEmail(email=email)
+    response = get_boring_app().client.users_lookupByEmail(email=email)
     if response.data["ok"] is True:
         return response.data["user"]["name"]
 

@@ -1,8 +1,11 @@
+asgi-lifespan
 asyncer
 black
 bunnet
 ipython
 locust
+pyright
 pytest
+pytest-asyncio
 ruff
 textual-dev
