@@ -78,7 +78,9 @@ async def fetch_proposals_for_cycle(cycle_name: str) -> list[str]:
     cycle = await Cycle.find_one(Cycle.name == cycle_name)
     if cycle is None:
         raise LookupError(f"Cycle {cycle} not found in local database.")
-    return cycle.proposals
+
+    return cycle.proposals or []
+
 
 
 async def fetch_data_sessions_for_username(username: str) -> list[str]:
