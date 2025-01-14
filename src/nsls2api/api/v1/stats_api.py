@@ -22,7 +22,7 @@ async def stats():
     facilities = await facility_service.facilities_count()
     commissioning = len(await proposal_service.commissioning_proposals())
 
-    facility_data_health = await facility_service.is_healthy("nsls2")
+    nsls2_data_health = await facility_service.is_healthy("nsls2")
 
     # Get the NSLS-II proposals per cycle
     nsls2_proposals_per_cycle: list[ProposalsPerCycleModel] = []
@@ -34,6 +34,8 @@ async def stats():
                 cycle=cycle, proposal_count=len(proposal_list)
             )
             nsls2_proposals_per_cycle.append(model)
+
+    lbms_data_health = await facility_service.is_healthy("lbms")
 
     # Get the LBMS proposals per cycle
     lbms_proposals_per_cycle: list[ProposalsPerCycleModel] = []
@@ -51,7 +53,8 @@ async def stats():
         beamline_count=beamlines,
         proposal_count=total_proposals,
         commissioning_proposal_count=commissioning,
-        facility_data_health=facility_data_health,
+        nsls2_data_health=nsls2_data_health,
+        lbms_data_health=lbms_data_health,
         nsls2_proposals_per_cycle=nsls2_proposals_per_cycle,
         lbms_proposals_per_cycle=lbms_proposals_per_cycle,
     )
