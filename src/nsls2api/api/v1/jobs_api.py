@@ -54,15 +54,34 @@ async def sync_dataadmins(request: Request) -> BackgroundJob:
     dependencies=[Depends(get_current_user)],
     include_in_schema=SYNC_ROUTES_IN_SCHEMA,
     tags=["sync"],
+    deprecated=True
 )
-async def sync_proposal(request: Request, proposal_id: str) -> BackgroundJob:
-    sync_params = JobSyncParameters(proposal_id=proposal_id)
+async def sync_proposal(
+    request: Request, proposal_id: str, facility: FacilityName = FacilityName.nsls2
+) -> BackgroundJob:
+    sync_params = JobSyncParameters(proposal_id=proposal_id, facility=facility)
     job = await background_service.create_background_job(
         JobActions.synchronize_proposal,
         sync_parameters=sync_params,
     )
     return job
 
+
+@router.get(
+    "/sync/facility/{facility}/proposal/{proposal_id}",
+    dependencies=[Depends(get_current_user)],
+    include_in_schema=SYNC_ROUTES_IN_SCHEMA,
+    tags=["sync"],
+)
+async def sync_facility_proposal(
+    request: Request, facility: FacilityName, proposal_id: str
+) -> BackgroundJob:
+    sync_params = JobSyncParameters(proposal_id=proposal_id, facility=facility)
+    job = await background_service.create_background_job(
+        JobActions.synchronize_proposal,
+        sync_parameters=sync_params,
+    )
+    return job
 
 @router.get(
     "/sync/proposal/types/{facility}",
