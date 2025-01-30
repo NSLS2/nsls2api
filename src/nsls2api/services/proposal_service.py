@@ -284,17 +284,25 @@ async def pi_from_proposal(proposal_id: str) -> Optional[list[User]]:
 
 
 # TODO: There seems to be a data integrity issue that not all commissioning proposals have a beamline listed.
-async def commissioning_proposals(beamline: str | None = None):
+async def commissioning_proposals(
+    beamline: str | None = None, facility_name: FacilityName | None = None
+):
+    query = []
+
+    if facility_name:
+        query.append(In(Proposal.facility, [facility_name]))
     if beamline:
         # Ensure we match the case in the database for the beamline name
         beamline = beamline.upper()
+        query.append(In(Proposal.instruments, [beamline]))
 
-        proposals = Proposal.find(In(Proposal.instruments, [beamline])).find(
-            Proposal.pass_type_id == "300005"
+    if len(query) == 0:
+        proposals = await Proposal.find(
+            Proposal.pass_type_id == "300005", projection_model=ProposalIdView
         )
     else:
-        proposals = Proposal.find(
-            Proposal.pass_type_id == "300005", projection_model=ProposalIdView
+        proposals = await Proposal.find_many(
+            And(*query).find(Proposal.pass_type_id == "300005")
         )
 
     commissioning_proposal_list = [
