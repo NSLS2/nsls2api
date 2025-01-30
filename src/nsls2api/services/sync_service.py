@@ -294,6 +294,9 @@ async def synchronize_proposal_from_pass(
         )
         user_list.append(pi_info)
 
+    facility = await facility_service.facility_by_pass_id(
+        pass_proposal.User_Facility_ID
+    )
     data_session = proposal_service.generate_data_session_for_proposal(proposal_id)
 
     proposal = Proposal(
@@ -302,6 +305,7 @@ async def synchronize_proposal_from_pass(
         data_session=data_session,
         pass_type_id=str(pass_proposal.Proposal_Type_ID),
         type=pass_proposal.Proposal_Type_Description,
+        facility=facility.facility_id,
         instruments=set(beamline_list),
         safs=saf_list,
         users=user_list,
@@ -315,6 +319,7 @@ async def synchronize_proposal_from_pass(
                 Proposal.data_session: data_session,
                 Proposal.pass_type_id: str(pass_proposal.Proposal_Type_ID),
                 Proposal.type: pass_proposal.Proposal_Type_Description,
+                Proposal.facility: facility.facility_id,
                 Proposal.instruments: beamline_list,
                 Proposal.safs: saf_list,
                 Proposal.users: user_list,
