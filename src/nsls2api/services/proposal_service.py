@@ -165,6 +165,9 @@ async def fetch_proposals(
 ) -> Optional[list[ProposalFullDetails]]:
     query = []
 
+    if facility:
+        query.append(In(Proposal.facility, facility))
+
     if beamline:
         query.append(In(Proposal.instruments, beamline))
 
