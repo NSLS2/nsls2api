@@ -301,8 +301,8 @@ async def commissioning_proposals(
             Proposal.pass_type_id == "300005", projection_model=ProposalIdView
         )
     else:
-        proposals = await Proposal.find_many(
-            And(*query).find(Proposal.pass_type_id == "300005")
+        proposals = await Proposal.find_many(And(*query)).find(
+            Proposal.pass_type_id == "300005"
         )
 
     commissioning_proposal_list = [
