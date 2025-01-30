@@ -165,6 +165,9 @@ async def fetch_proposals(
 ) -> Optional[list[ProposalFullDetails]]:
     query = []
 
+    if facility:
+        query.append(In(Proposal.facility, facility))
+
     if beamline:
         query.append(In(Proposal.instruments, beamline))
 
@@ -526,6 +529,7 @@ async def generate_fake_test_proposal(
         users=user_list,
         pass_type_id="666666",
         data_session=generate_data_session_for_proposal(str(fake_proposal_id)),
+        facility=["nsls2"],
         instruments=["TST"],
         cycles=[fake_cycle],
         last_updated=datetime.datetime.now(),

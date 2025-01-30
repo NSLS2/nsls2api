@@ -27,6 +27,7 @@ class Proposal(beanie.Document):
     title: Optional[str] = None
     type: Optional[str] = None
     pass_type_id: Optional[str] = None
+    facility: str
     instruments: Optional[list[str]] = []
     cycles: Optional[list[str]] = []
     users: Optional[list[User]] = []
@@ -75,6 +76,7 @@ class Proposal(beanie.Document):
                     ("proposal_id", pymongo.TEXT),
                     ("data_session", pymongo.TEXT),
                     ("safs.saf_id", pymongo.TEXT),
+                    ("facility", pymongo.TEXT),
                     ("instruments", pymongo.TEXT),
                     ("cycles", pymongo.TEXT),
                     ("title", pymongo.TEXT),

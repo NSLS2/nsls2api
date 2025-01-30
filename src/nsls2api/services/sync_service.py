@@ -156,9 +156,9 @@ async def worker_synchronize_proposal_types_from_pass(
     start_time = datetime.datetime.now()
 
     try:
-        pass_proposal_types: list[
-            PassProposalType
-        ] = await pass_service.get_proposal_types(facility_name)
+        pass_proposal_types: list[PassProposalType] = (
+            await pass_service.get_proposal_types(facility_name)
+        )
     except pass_service.PassException as error:
         error_message = (
             f"Error retrieving proposal types from PASS for {facility_name} facility."
@@ -294,6 +294,9 @@ async def synchronize_proposal_from_pass(
         )
         user_list.append(pi_info)
 
+    facility = await facility_service.facility_by_pass_id(
+        pass_proposal.User_Facility_ID
+    )
     data_session = proposal_service.generate_data_session_for_proposal(proposal_id)
 
     proposal = Proposal(
@@ -302,6 +305,7 @@ async def synchronize_proposal_from_pass(
         data_session=data_session,
         pass_type_id=str(pass_proposal.Proposal_Type_ID),
         type=pass_proposal.Proposal_Type_Description,
+        facility=facility.facility_id,
         instruments=set(beamline_list),
         safs=saf_list,
         users=user_list,
@@ -315,6 +319,7 @@ async def synchronize_proposal_from_pass(
                 Proposal.data_session: data_session,
                 Proposal.pass_type_id: str(pass_proposal.Proposal_Type_ID),
                 Proposal.type: pass_proposal.Proposal_Type_Description,
+                Proposal.facility: facility.facility_id,
                 Proposal.instruments: beamline_list,
                 Proposal.safs: saf_list,
                 Proposal.users: user_list,
@@ -388,10 +393,10 @@ async def worker_synchronize_proposals_for_cycle_from_pass(
         logger.info(f"Synchronizing proposal {proposal_id}.")
         await synchronize_proposal_from_pass(proposal_id, facility_name)
 
-    commissioning_proposals: list[
-        PassProposal
-    ] = await pass_service.get_commissioning_proposals_by_year(
-        cycle_year, facility_name=facility_name
+    commissioning_proposals: list[PassProposal] = (
+        await pass_service.get_commissioning_proposals_by_year(
+            cycle_year, facility_name=facility_name
+        )
     )
     logger.info(
         f"Synchronizing {len(proposals)} commissioning proposals for the year {cycle_year}."
