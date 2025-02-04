@@ -6,6 +6,7 @@ import fastapi
 import uvicorn
 from asgi_correlation_id import CorrelationIdMiddleware
 from fastapi.middleware.cors import CORSMiddleware
+from prometheus_fastapi_instrumentator import Instrumentator
 from starlette.middleware import Middleware
 from starlette.staticfiles import StaticFiles
 
@@ -43,6 +44,8 @@ static_root_absolute = current_file_dir_absolute / "static"
 local_development_mode = False
 app_setup.local_development_mode = local_development_mode
 
+# Instantiate the instrumentator
+instrumentator = Instrumentator()
 
 middleware = [Middleware(ProcessTimeMiddleware)]
 
@@ -50,6 +53,11 @@ app = fastapi.FastAPI(
     title="NSLS-II API", middleware=middleware, lifespan=app_setup.app_lifespan
 )
 
+# Instrument the app and expose the /metrics endpoint
+# (this is equivalent to calling instrumentator.instrument(app)
+# and instrumentator.expose(app) in the startup event)
+instrumentator.instrument(app)
+instrumentator.expose(app, endpoint="/metrics", include_in_schema=False)
 
 app.add_middleware(CorrelationIdMiddleware)
 

@@ -1,6 +1,8 @@
 import asyncio
 from contextlib import asynccontextmanager
 
+from fastapi import FastAPI
+
 from nsls2api.infrastructure import mongodb_setup
 from nsls2api.infrastructure.config import get_settings
 from nsls2api.services import background_service
@@ -12,7 +14,7 @@ local_development_mode = False
 
 
 @asynccontextmanager
-async def app_lifespan(_):
+async def app_lifespan(app: FastAPI):
     # Initialize the MongoDB connection
     await mongodb_setup.init_connection(settings.mongodb_dsn)
 

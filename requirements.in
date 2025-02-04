@@ -11,6 +11,7 @@ jinja2
 jinja-partials
 n2snusertools
 passlib
+prometheus-fastapi-instrumentator
 pydantic
 pydantic-settings
 python-multipart

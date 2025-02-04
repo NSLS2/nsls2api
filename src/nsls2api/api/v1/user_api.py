@@ -2,11 +2,11 @@ from typing import Annotated
 
 import fastapi
 from fastapi import Depends
+
+from nsls2api.api.models.person_model import DataSessionAccess, Person
 from nsls2api.infrastructure.security import (
     get_current_user,
 )
-
-from nsls2api.api.models.person_model import Person, DataSessionAccess
 from nsls2api.services import (
     bnlpeople_service,
     person_service,
@@ -87,6 +87,7 @@ async def get_myself(current_user: Annotated[Person, Depends(get_current_user)])
     include_in_schema=True,
     description="Deprecated endpoint included for Tiled compatibility.",
     deprecated=True,
+    operation_id="get_data_session_by_username_v1_deprecated_endpoint",
 )
 async def get_data_sessions_by_username(username: str):
     data_access = await person_service.data_sessions_by_username(username)
