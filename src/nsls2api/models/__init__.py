@@ -1,11 +1,11 @@
 from nsls2api.models import (
-    facilities,
-    cycles,
-    proposal_types,
-    beamlines,
-    proposals,
     apikeys,
+    beamlines,
+    cycles,
+    facilities,
     jobs,
+    proposal_types,
+    proposals,
 )
 
 all_models = [
