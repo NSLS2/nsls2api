@@ -18,8 +18,8 @@ from nsls2api.models.cycles import Cycle
 from nsls2api.models.proposal_types import ProposalType
 from nsls2api.models.proposals import Proposal, ProposalIdView, User
 from nsls2api.services import (
-    bnlpeople_service,
     beamline_service,
+    bnlpeople_service,
     facility_service,
 )
 
