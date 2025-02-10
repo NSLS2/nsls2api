@@ -1,14 +1,14 @@
+import configparser
+import getpass
 import os
+from configparser import NoOptionError, NoSectionError
 from pathlib import Path
 from typing import Optional
 
 import httpx
 import typer
-import getpass
-import configparser
-from configparser import NoOptionError, NoSectionError
-from nsls2api.infrastructure.security import SpecialUsers
 
+from nsls2api.infrastructure.security import SpecialUsers
 
 BASE_URL = "http://localhost:8000"
 
