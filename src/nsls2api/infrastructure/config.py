@@ -2,19 +2,18 @@ import os
 from functools import lru_cache
 from pathlib import Path
 
-from pydantic import MongoDsn, HttpUrl
+from pydantic import HttpUrl, MongoDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    """
-    Settings Class
+    """Settings Class
     ==============
 
     This class represents the settings for the application. It inherits from the `BaseSettings` class provided by `pydantic_settings` library.
 
     Attributes:
-    -----------
+    ----------
     pass_api_key (str): The API key used for authentication with the PASS API.
     pass_api_url (str): The URL of the PASS API. Defaults to "https://passservices.bnl.gov/passapi".
     active_directory_server (str): The server address for the Active Directory.
@@ -30,7 +29,7 @@ class Settings(BaseSettings):
     settings = Settings()
 
     Example:
-    --------
+    -------
     settings = Settings()
     settings.pass_api_key = "123456"
     settings.active_directory_server = "ldap.example.com"
@@ -38,6 +37,7 @@ class Settings(BaseSettings):
     settings.n2sn_user_search = "user@example.com"
     settings.n2sn_group_search = "group@example.com"
     settings.bnlroot_ca_certs_file = "/path/to/ca_certs.pem"
+
     """
 
     # Active Directory settings
