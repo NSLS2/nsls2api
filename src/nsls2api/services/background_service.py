@@ -11,7 +11,7 @@ from nsls2api.services import sync_service
 
 
 async def create_background_job(
-    action: JobActions, sync_parameters: JobSyncParameters = None
+    action: JobActions, sync_parameters: JobSyncParameters = None,
 ) -> BackgroundJob:
     job = BackgroundJob(action=action, sync_parameters=sync_parameters)
     await job.save()
@@ -39,7 +39,7 @@ async def start_job(job_id: bson.ObjectId) -> Optional[BackgroundJob]:
 
     if job.processing_status != JobStatus.awaiting:
         raise Exception(
-            f"Cannot start job {job_id} with status {job.processing_status}."
+            f"Cannot start job {job_id} with status {job.processing_status}.",
         )
 
     job.processing_status = JobStatus.processing
@@ -58,7 +58,7 @@ async def complete_job(
 
     if job.processing_status != JobStatus.processing:
         raise Exception(
-            f"Cannot complete job {job_id} with status {job.processing_status}."
+            f"Cannot complete job {job_id} with status {job.processing_status}.",
         )
 
     job.processing_status = processing_status
@@ -109,42 +109,42 @@ async def worker_function():
                     await sync_service.worker_synchronize_dataadmins()
                 case JobActions.update_cycle_information:
                     logger.info(
-                        f"Processing job {job.id} to update cycle information for the {job.sync_parameters.facility} facility (from {job.sync_parameters.sync_source})."
+                        f"Processing job {job.id} to update cycle information for the {job.sync_parameters.facility} facility (from {job.sync_parameters.sync_source}).",
                     )
                     await sync_service.worker_update_proposal_to_cycle_mapping(
-                        job.sync_parameters.facility, job.sync_parameters.sync_source
+                        job.sync_parameters.facility, job.sync_parameters.sync_source,
                     )
                 case JobActions.synchronize_cycles:
                     logger.info(
-                        f"Processing job {job.id} to synchronize cycles for the {job.sync_parameters.facility} facility (from {job.sync_parameters.sync_source})."
+                        f"Processing job {job.id} to synchronize cycles for the {job.sync_parameters.facility} facility (from {job.sync_parameters.sync_source}).",
                     )
                     await sync_service.worker_synchronize_cycles_from_pass(
-                        job.sync_parameters.facility
+                        job.sync_parameters.facility,
                     )
                 case JobActions.synchronize_proposal:
                     logger.info(
-                        f"Processing job {job.id} to synchronize proposal {job.sync_parameters.proposal_id} for the {job.sync_parameters.facility} facility (from {job.sync_parameters.sync_source})."
+                        f"Processing job {job.id} to synchronize proposal {job.sync_parameters.proposal_id} for the {job.sync_parameters.facility} facility (from {job.sync_parameters.sync_source}).",
                     )
                     await sync_service.worker_synchronize_proposal_from_pass(
-                        job.sync_parameters.proposal_id, job.sync_parameters.facility
+                        job.sync_parameters.proposal_id, job.sync_parameters.facility,
                     )
                 case JobActions.synchronize_proposals_for_cycle:
                     logger.info(
-                        f"Processing job {job.id} to synchronize proposals for the {job.sync_parameters.facility} facility's cycle {job.sync_parameters.cycle} (from {job.sync_parameters.sync_source})."
+                        f"Processing job {job.id} to synchronize proposals for the {job.sync_parameters.facility} facility's cycle {job.sync_parameters.cycle} (from {job.sync_parameters.sync_source}).",
                     )
                     await sync_service.worker_synchronize_proposals_for_cycle_from_pass(
-                        job.sync_parameters.cycle, job.sync_parameters.facility
+                        job.sync_parameters.cycle, job.sync_parameters.facility,
                     )
                 case JobActions.synchronize_proposal_types:
                     logger.info(
-                        f"Processing job {job.id} to synchronize proposal types for the {job.sync_parameters.facility} facility (from {job.sync_parameters.sync_source})."
+                        f"Processing job {job.id} to synchronize proposal types for the {job.sync_parameters.facility} facility (from {job.sync_parameters.sync_source}).",
                     )
                     await sync_service.worker_synchronize_proposal_types_from_pass(
-                        job.sync_parameters.facility
+                        job.sync_parameters.facility,
                     )
                 case JobActions.create_slack_channel:
                     logger.info(
-                        f"I would be Processing job {job.id} to create Slack channel for proposal {job.sync_parameters.proposal_id} if it was written."
+                        f"I would be Processing job {job.id} to create Slack channel for proposal {job.sync_parameters.proposal_id} if it was written.",
                     )
                     # await proposal_service.worker_create_slack_channel(job.proposal_id)
                 case _:

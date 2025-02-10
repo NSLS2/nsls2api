@@ -1,15 +1,13 @@
 import datetime
-from typing import Optional
-from beanie import Insert, before_event
+from enum import StrEnum
+
 import beanie
 import pydantic
-
-from enum import StrEnum
+from beanie import Insert, before_event
 
 
 class DirectoryGranularity(StrEnum):
-    """
-    Represents the granularity options for asset directory YYYY/MM/DD/HH tree structure.
+    """Represents the granularity options for asset directory YYYY/MM/DD/HH tree structure.
     The value specifies the most granular level to create directories for.  If no date
     structure is wanted then the value "flat" is used.
     """
@@ -52,11 +50,11 @@ class Directory(pydantic.BaseModel):
                                 {"dataadmins": "rw"},
                                 {"datareaders": "r"},
                             ],
-                        }
+                        },
                     ],
-                }
-            ]
-        }
+                },
+            ],
+        },
     }
 
 
@@ -208,10 +206,10 @@ class Beamline(beanie.Document):
     services: Optional[list[BeamlineService]] = []
     detectors: Optional[list[Detector]] = []
     created_on: datetime.datetime = pydantic.Field(
-        default_factory=datetime.datetime.now
+        default_factory=datetime.datetime.now,
     )
     last_updated: datetime.datetime = pydantic.Field(
-        default_factory=datetime.datetime.now
+        default_factory=datetime.datetime.now,
     )
 
     @before_event(Insert)
