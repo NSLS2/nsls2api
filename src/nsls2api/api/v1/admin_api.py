@@ -8,13 +8,13 @@ from nsls2api.api.models.proposal_model import SingleProposal
 from nsls2api.infrastructure import config
 from nsls2api.infrastructure.logging import logger
 from nsls2api.infrastructure.security import (
-    validate_admin_role,
     generate_api_key,
+    validate_admin_role,
 )
 from nsls2api.models.apikeys import (
     ApiUser,
-    ApiUserRole,
     ApiUserResponseModel,
+    ApiUserRole,
     ApiUserType,
 )
 from nsls2api.models.slack_models import SlackChannelCreationResponseModel
@@ -22,7 +22,7 @@ from nsls2api.services import beamline_service, proposal_service, slack_service
 
 # router = fastapi.APIRouter()
 router = fastapi.APIRouter(
-    dependencies=[Depends(validate_admin_role)], include_in_schema=True, tags=["admin"]
+    dependencies=[Depends(validate_admin_role)], include_in_schema=True, tags=["admin"],
 )
 
 
@@ -35,10 +35,8 @@ async def info(settings: Annotated[config.Settings, Depends(config.get_settings)
 async def check_admin_validation(
     admin_user: Annotated[ApiUser, Depends(validate_admin_role)] = None,
 ):
+    """:return: str - The username of the validated admin user.
     """
-    :return: str - The username of the validated admin user.
-    """
-
     if admin_user is None:
         raise HTTPException(
             status_code=fastapi.status.HTTP_401_UNAUTHORIZED,
@@ -50,8 +48,7 @@ async def check_admin_validation(
 
 @router.post("/admin/generate-api-key/{username}")
 async def generate_user_apikey(username: str, usertype: ApiUserType = ApiUserType.user):
-    """
-    Generate an API key for a given username.
+    """Generate an API key for a given username.
 
     :param username: The username for which to generate the API key.
     :param usertype: The type of API key to generate.
@@ -65,7 +62,7 @@ async def generate_fake_proposal(
     add_specific_user: str | None = None,
 ) -> Optional[SingleProposal]:
     proposal = await proposal_service.generate_fake_test_proposal(
-        FacilityName.nsls2, add_specific_user
+        FacilityName.nsls2, add_specific_user,
     )
 
     if proposal is None:
@@ -117,11 +114,11 @@ async def create_slack_channel(proposal_id: str) -> SlackChannelCreationResponse
     for beamline in proposal.instruments:
         slack_managers = await beamline_service.slack_channel_managers(beamline)
         logger.info(
-            f"Adding Slack channel managers for {beamline} beamline [{slack_managers}]."
+            f"Adding Slack channel managers for {beamline} beamline [{slack_managers}].",
         )
         if len(slack_managers) > 0:
             slack_service.add_users_to_channel(
-                channel_id=channel_id, user_ids=slack_managers
+                channel_id=channel_id, user_ids=slack_managers,
             )
             slack_managers_added.append(slack_managers)
 
@@ -135,12 +132,12 @@ async def create_slack_channel(proposal_id: str) -> SlackChannelCreationResponse
                 logger.info(f"User {user.username} does not have a slack_id")
             else:
                 logger.info(
-                    f"Adding user {user.username} ({user_slack_id}) to slack channel..."
+                    f"Adding user {user.username} ({user_slack_id}) to slack channel...",
                 )
                 proposal_user_ids.append(user_slack_id)
 
     logger.info(
-        f"Slack users {proposal_user_ids} will be added to the proposal channel"
+        f"Slack users {proposal_user_ids} will be added to the proposal channel",
     )
 
     # TODO: Uncomment to actually add the users when we are sure!!
@@ -158,8 +155,7 @@ async def create_slack_channel(proposal_id: str) -> SlackChannelCreationResponse
 
 @router.put("/admin/user/{username}/role/{role}")
 async def update_user_role(username: str, role: ApiUserRole) -> ApiUserResponseModel:
-    """
-    Update the role of a user.
+    """Update the role of a user.
 
     :param username: The username of the user to update.
     :param role: The new role for the user.
