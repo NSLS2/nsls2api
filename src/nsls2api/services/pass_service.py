@@ -5,7 +5,6 @@ from pydantic import ValidationError
 from nsls2api.api.models.facility_model import FacilityName
 from nsls2api.infrastructure import config
 from nsls2api.infrastructure.logging import logger
-from nsls2api.services.helpers import httpx_client_wrapper
 from nsls2api.models.cycles import Cycle
 from nsls2api.models.pass_models import (
     PassAllocation,
@@ -15,7 +14,10 @@ from nsls2api.models.pass_models import (
     PassSaf,
 )
 from nsls2api.services import facility_service
-from nsls2api.services.helpers import _call_async_webservice_with_client
+from nsls2api.services.helpers import (
+    _call_async_webservice_with_client,
+    httpx_client_wrapper,
+)
 
 settings = config.get_settings()
 
@@ -139,7 +141,7 @@ async def get_commissioning_proposals_by_year(
         if pass_commissioning_proposals and len(pass_commissioning_proposals) > 0:
             for commissioning_proposal in pass_commissioning_proposals:
                 commissioning_proposal_list.append(
-                    PassProposal(**commissioning_proposal)
+                    PassProposal(**commissioning_proposal),
                 )
     except ValidationError as error:
         error_message = f"Error validating commissioning proposal data received from PASS for year {str(year)} at {facility_name} facility."
