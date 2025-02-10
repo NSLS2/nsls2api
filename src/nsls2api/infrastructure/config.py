@@ -79,8 +79,7 @@ class Settings(BaseSettings):
 
 @lru_cache()
 def get_settings() -> Settings:
-    """
-    Retrieve the settings dictionary.
+    """Retrieve the settings dictionary.
 
     :returns: The dictionary of current settings.
     """
