@@ -2,27 +2,27 @@ import datetime
 from pathlib import Path
 from typing import Optional
 
-from beanie.odm.operators.find.comparison import In
 from beanie.odm.operators.find.array import ElemMatch
+from beanie.odm.operators.find.comparison import In
 from beanie.odm.operators.update.general import Set
 
-from nsls2api.models.beamlines import DirectoryGranularity
 from nsls2api.infrastructure.logging import logger
 from nsls2api.models.beamlines import (
     Beamline,
+    BlueskyServiceAccountView,
+    DataRootDirectoryView,
     Detector,
     DetectorView,
-    ServicesOnly,
+    DirectoryGranularity,
+    EpicsServicesServiceAccountView,
+    IOCServiceAccountView,
+    LsdcServiceAccountView,
+    OperatorServiceAccountView,
     ServiceAccounts,
     ServiceAccountsView,
+    ServicesOnly,
     SlackChannelManagersView,
     WorkflowServiceAccountView,
-    IOCServiceAccountView,
-    EpicsServicesServiceAccountView,
-    BlueskyServiceAccountView,
-    OperatorServiceAccountView,
-    DataRootDirectoryView,
-    LsdcServiceAccountView,
 )
 from nsls2api.services import slack_service
 
@@ -49,8 +49,7 @@ async def beamline_by_name(name: str) -> Optional[Beamline]:
 
 
 async def all_beamlines() -> list[Beamline]:
-    """
-    Retrieve all beamlines from the database.
+    """Retrieve all beamlines from the database.
 
     :return: A list of all beamlines in the database.
     """
@@ -71,14 +70,14 @@ async def beamline_by_pass_id(pass_id: str) -> Optional[Beamline]:
 
 async def all_services(name: str) -> Optional[ServicesOnly]:
     beamline_services = await Beamline.find_one(Beamline.name == name.upper()).project(
-        ServicesOnly
+        ServicesOnly,
     )
     return beamline_services.services
 
 
 async def detectors(name: str) -> Optional[list[Detector]]:
     beamline_detectors = await Beamline.find_one(Beamline.name == name.upper()).project(
-        DetectorView
+        DetectorView,
     )
 
     if beamline_detectors is None:
@@ -108,6 +107,7 @@ async def add_detector(
 
     Returns:
         Optional[Detector]: The newly created Detector object if successful, None otherwise.
+
     """
     beamline = await Beamline.find_one(Beamline.name == beamline_name.upper())
 
@@ -125,12 +125,12 @@ async def add_detector(
     )
     if detector_name in current_detector_names:
         logger.info(
-            f"Detector with name {detector_name} already exists in beamline {beamline_name}"
+            f"Detector with name {detector_name} already exists in beamline {beamline_name}",
         )
         return None
     elif directory_name in current_directory_names:
         logger.info(
-            f"Detector with directory name {directory_name} already exists in beamline {beamline_name}"
+            f"Detector with directory name {directory_name} already exists in beamline {beamline_name}",
         )
         return None
     else:
@@ -154,6 +154,7 @@ async def delete_detector(
 
     Returns:
         Optional[Detector]: The deleted Detector object if successful, None otherwise.
+
     """
     beamline = await Beamline.find_one(Beamline.name == beamline_name.upper())
 
@@ -169,7 +170,7 @@ async def delete_detector(
     )
     if deleted_detector is None:
         logger.info(
-            f"Detector {old_detector_name} was not found for beamline {beamline_name}"
+            f"Detector {old_detector_name} was not found for beamline {beamline_name}",
         )
         return None
 
@@ -177,7 +178,7 @@ async def delete_detector(
     beamline.last_updated = datetime.datetime.now()
     await beamline.save()
     logger.info(
-        f"Detector {deleted_detector.name} was deleted from beamline {beamline_name}"
+        f"Detector {deleted_detector.name} was deleted from beamline {beamline_name}",
     )
 
     return deleted_detector
@@ -185,7 +186,7 @@ async def delete_detector(
 
 async def service_accounts(name: str) -> Optional[ServiceAccounts]:
     accounts = await Beamline.find_one(Beamline.name == name.upper()).project(
-        ServiceAccountsView
+        ServiceAccountsView,
     )
 
     if accounts is None:
@@ -198,7 +199,7 @@ async def data_root_directory(name: str) -> str:
     default_root = Path("/nsls2/data")
 
     data_root = await Beamline.find_one(Beamline.name == name.upper()).project(
-        DataRootDirectoryView
+        DataRootDirectoryView,
     )
 
     # print(f"data_root: {data_root} ")
@@ -215,7 +216,7 @@ async def data_root_directory(name: str) -> str:
 
 async def workflow_username(name: str) -> str:
     workflow_account = await Beamline.find_one(Beamline.name == name.upper()).project(
-        WorkflowServiceAccountView
+        WorkflowServiceAccountView,
     )
     if workflow_account is None:
         # Let's make an educated guess
@@ -225,7 +226,7 @@ async def workflow_username(name: str) -> str:
 
 async def ioc_username(name: str) -> str:
     ioc_account = await Beamline.find_one(Beamline.name == name.upper()).project(
-        IOCServiceAccountView
+        IOCServiceAccountView,
     )
     if ioc_account is None:
         # Let's make an educated guess
@@ -236,7 +237,7 @@ async def ioc_username(name: str) -> str:
 
 async def bluesky_username(name: str) -> str:
     bluesky_account = await Beamline.find_one(Beamline.name == name.upper()).project(
-        BlueskyServiceAccountView
+        BlueskyServiceAccountView,
     )
     if bluesky_account is None:
         # Let's make an educated guess
@@ -247,12 +248,12 @@ async def bluesky_username(name: str) -> str:
 
 async def operator_username(name: str) -> str:
     operator_account = await Beamline.find_one(Beamline.name == name.upper()).project(
-        OperatorServiceAccountView
+        OperatorServiceAccountView,
     )
 
     if operator_account is None:
         raise LookupError(
-            f"Could not find a the operator account for the {name} beamline."
+            f"Could not find a the operator account for the {name} beamline.",
         )
 
     return operator_account.username
@@ -260,7 +261,7 @@ async def operator_username(name: str) -> str:
 
 async def epics_services_username(name: str) -> str:
     epics_services_account = await Beamline.find_one(
-        Beamline.name == name.upper()
+        Beamline.name == name.upper(),
     ).project(EpicsServicesServiceAccountView)
 
     if epics_services_account is None:
@@ -272,7 +273,7 @@ async def epics_services_username(name: str) -> str:
 
 async def lsdc_username(name: str) -> Optional[str]:
     lsdc_account = await Beamline.find_one(Beamline.name == name.upper()).project(
-        LsdcServiceAccountView
+        LsdcServiceAccountView,
     )
 
     if lsdc_account is None:
@@ -288,14 +289,14 @@ async def data_roles_by_user(username: str) -> Optional[list[str]]:
 
 
 async def data_admin_group(beamline_name: str) -> str:
-    """
-    Retrieves the data admin group for a given beamline name.
+    """Retrieves the data admin group for a given beamline name.
 
     Args:
         beamline_name (str): The name of the beamline.
 
     Returns:
         str: The data admin group for the specified beamline name.
+
     """
     beamline = await Beamline.find_one(Beamline.name == beamline_name.upper())
 
@@ -306,15 +307,15 @@ async def data_admin_group(beamline_name: str) -> str:
 
 
 async def update_data_admins(beamline_name: str, data_admins: list[str]):
-    """
-    Update the data admins for a given beamline.
+    """Update the data admins for a given beamline.
 
     Args:
         beamline_name (str): The name of the beamline.
         data_admins (list[str]): A list of usernames to set as data admins for the beamline.
+
     """
     await Beamline.find_one(Beamline.name == beamline_name.upper()).update(
-        Set({Beamline.data_admins: data_admins})
+        Set({Beamline.data_admins: data_admins}),
     )
 
 
@@ -411,8 +412,7 @@ async def directory_skeleton(name: str):
 
 
 async def check_service_exists(beamline_name: str, service_name: str) -> bool:
-    """
-    Check if a service exists in a given beamline.
+    """Check if a service exists in a given beamline.
 
     Args:
         beamline_name (str): The name of the beamline.
@@ -420,8 +420,8 @@ async def check_service_exists(beamline_name: str, service_name: str) -> bool:
 
     Returns:
         bool: True if the service exists in the beamline, False otherwise.
-    """
 
+    """
     # Get the beamline from the database
     beamline = await Beamline.find_one(Beamline.name == beamline_name.upper())
 
@@ -430,7 +430,7 @@ async def check_service_exists(beamline_name: str, service_name: str) -> bool:
         return False
 
     current_services = await beamline.find(
-        ElemMatch(Beamline.services, {"name": service_name})
+        ElemMatch(Beamline.services, {"name": service_name}),
     ).to_list()
 
     print(f"current_services: {current_services}")
@@ -444,14 +444,14 @@ async def check_service_exists(beamline_name: str, service_name: str) -> bool:
 
 
 async def uses_synchweb(name: str) -> bool:
-    """
-    Check if the specified beamline uses the SynchWeb service.
+    """Check if the specified beamline uses the SynchWeb service.
 
     Args:
         name (str): The name of the beamline.
 
     Returns:
         bool: True if the beamline uses SynchWeb, False otherwise.
+
     """
     if await check_service_exists(name, "synchweb"):
         return True
@@ -459,9 +459,8 @@ async def uses_synchweb(name: str) -> bool:
         return False
 
 
-async def slack_channel_managers(beamline_name: str) -> Optional[list[str]]:
-    """
-    Retrieves the Slack user IDs of the channel managers for a given beamline.
+async def slack_channel_managers(beamline_name: str) -> list[str] | None:
+    """Retrieves the Slack user IDs of the channel managers for a given beamline.
 
     Args:
         beamline_name (str): The name of the beamline.
@@ -471,7 +470,7 @@ async def slack_channel_managers(beamline_name: str) -> Optional[list[str]]:
 
     """
     beamline = await Beamline.find_one(Beamline.name == beamline_name.upper()).project(
-        SlackChannelManagersView
+        SlackChannelManagersView,
     )
     if beamline is None:
         return None
