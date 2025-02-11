@@ -3,8 +3,8 @@ from typing import Optional
 
 import pydantic
 
-from nsls2api.models.proposals import Proposal, User
 from nsls2api.models.beamlines import DirectoryGranularity
+from nsls2api.models.proposals import Proposal, User
 
 
 class UsernamesList(pydantic.BaseModel):

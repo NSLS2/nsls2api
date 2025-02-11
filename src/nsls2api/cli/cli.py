@@ -2,12 +2,7 @@ from typing import Optional
 
 import typer
 
-from nsls2api.cli import admin
-from nsls2api.cli import api
-from nsls2api.cli import auth
-from nsls2api.cli import beamline
-from nsls2api.cli import facility
-from nsls2api.cli import proposal
+from nsls2api.cli import admin, api, auth, beamline, facility, proposal
 
 __app_name__ = "nsls2api-cli"
 __version__ = "0.1.0"

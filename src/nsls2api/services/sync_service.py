@@ -6,8 +6,18 @@ from httpx import HTTPStatusError
 
 from nsls2api.api.models.facility_model import FacilityName
 from nsls2api.api.models.person_model import ActiveDirectoryUser
+from nsls2api.infrastructure.logging import logger
 from nsls2api.models.beamlines import Beamline
-from nsls2api.models.pass_models import PassCycle, PassProposalType
+from nsls2api.models.cycles import Cycle
+from nsls2api.models.jobs import JobSyncSource
+from nsls2api.models.pass_models import (
+    PassCycle,
+    PassProposal,
+    PassProposalType,
+    PassSaf,
+)
+from nsls2api.models.proposal_types import ProposalType
+from nsls2api.models.proposals import Proposal, SafetyForm, User
 from nsls2api.services import (
     beamline_service,
     bnlpeople_service,
@@ -16,13 +26,6 @@ from nsls2api.services import (
     pass_service,
     proposal_service,
 )
-
-from nsls2api.infrastructure.logging import logger
-from nsls2api.models.cycles import Cycle
-from nsls2api.models.jobs import JobSyncSource
-from nsls2api.models.pass_models import PassProposal, PassSaf
-from nsls2api.models.proposal_types import ProposalType
-from nsls2api.models.proposals import Proposal, SafetyForm, User
 
 
 async def worker_synchronize_dataadmins(skip_beamlines=False) -> None:

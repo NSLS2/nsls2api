@@ -1,4 +1,5 @@
 from typing import Optional
+
 import bson
 import fastapi
 from fastapi import Depends, Request

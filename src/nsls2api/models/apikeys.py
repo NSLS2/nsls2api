@@ -6,7 +6,7 @@ from uuid import UUID, uuid4
 import beanie
 import pydantic
 import pymongo
-from beanie import Link, BackLink
+from beanie import BackLink, Link
 from pydantic import Field
 
 
@@ -36,10 +36,10 @@ class ApiUser(beanie.Document):
     type: ApiUserType
     role: Optional[ApiUserRole] = ApiUserRole.user
     created_on: datetime.datetime = pydantic.Field(
-        default_factory=datetime.datetime.now
+        default_factory=datetime.datetime.now,
     )
     last_updated: datetime.datetime = pydantic.Field(
-        default_factory=datetime.datetime.now
+        default_factory=datetime.datetime.now,
     )
     user_api_keys: BackLink["ApiKey"] = Field(original_field="user")
     # user_api_keys: Optional[List[BackLink["ApiKey"]]]= Field(original_field="user")
@@ -78,10 +78,10 @@ class ApiKey(beanie.Document):
     valid: bool = True
     expires_after: Optional[datetime.datetime] = None
     created_on: datetime.datetime = pydantic.Field(
-        default_factory=datetime.datetime.now
+        default_factory=datetime.datetime.now,
     )
     last_updated: datetime.datetime = pydantic.Field(
-        default_factory=datetime.datetime.now
+        default_factory=datetime.datetime.now,
     )
 
     class Settings:

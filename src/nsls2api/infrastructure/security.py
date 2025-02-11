@@ -4,15 +4,15 @@ import enum
 import secrets
 from typing import Optional
 
-from beanie import WriteRules, Link
-from fastapi import Security, status, HTTPException, Request, Depends
+from beanie import Link, WriteRules
+from fastapi import Depends, HTTPException, Request, Security, status
 from fastapi.security import APIKeyHeader, APIKeyQuery
 from passlib.handlers.argon2 import argon2 as crypto
 from pydantic_settings import BaseSettings
 
 from nsls2api.infrastructure.config import get_settings
 from nsls2api.infrastructure.logging import logger
-from nsls2api.models.apikeys import ApiKey, ApiUser, ApiUserType, ApiUserRole
+from nsls2api.models.apikeys import ApiKey, ApiUser, ApiUserRole, ApiUserType
 
 TOKEN_BYTE_LENGTH = 32
 API_KEY_PREFIX = "nsls2-api-"

@@ -1,7 +1,7 @@
 from typing import Annotated
 
 import fastapi
-from fastapi import Depends, Query, HTTPException
+from fastapi import Depends, HTTPException, Query
 
 from nsls2api.api.models.facility_model import FacilityName
 from nsls2api.api.models.proposal_model import (
@@ -13,8 +13,8 @@ from nsls2api.api.models.proposal_model import (
     RecentProposal,
     RecentProposalsList,
     SingleProposal,
+    UsernamesList,
 )
-from nsls2api.api.models.proposal_model import UsernamesList
 from nsls2api.infrastructure.security import get_current_user
 from nsls2api.services import proposal_service
 
