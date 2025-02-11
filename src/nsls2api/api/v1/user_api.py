@@ -2,11 +2,11 @@ from typing import Annotated
 
 import fastapi
 from fastapi import Depends
+
+from nsls2api.api.models.person_model import DataSessionAccess, Person
 from nsls2api.infrastructure.security import (
     get_current_user,
 )
-
-from nsls2api.api.models.person_model import Person, DataSessionAccess
 from nsls2api.services import (
     bnlpeople_service,
     person_service,

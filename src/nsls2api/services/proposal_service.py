@@ -1,12 +1,12 @@
 import datetime
-from pathlib import Path
-from faker import Faker
-from faker.providers import python, date_time
 import random
+from pathlib import Path
 from typing import Optional
 
 from beanie.odm.operators.find.array import ElemMatch
 from beanie.operators import And, In, RegEx, Text
+from faker import Faker
+from faker.providers import date_time, python
 
 from nsls2api.api.models.facility_model import FacilityName
 from nsls2api.api.models.proposal_model import (

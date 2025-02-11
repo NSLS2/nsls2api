@@ -1,14 +1,12 @@
 import datetime
+from enum import StrEnum
 from typing import Optional
 
 import beanie
 import pydantic
 import pymongo
 
-from enum import StrEnum
-
 from nsls2api.api.models.facility_model import FacilityName
-
 
 # If we want to use Python < 3.11 then replace the above line with
 # from strenum import StrEnum

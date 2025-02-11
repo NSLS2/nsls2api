@@ -3,8 +3,8 @@ import fastapi
 from nsls2api._version import version as api_version
 from nsls2api.api.models.stats_model import (
     AboutModel,
-    StatsModel,
     ProposalsPerCycleModel,
+    StatsModel,
 )
 from nsls2api.services import (
     beamline_service,

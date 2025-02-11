@@ -1,13 +1,11 @@
 import datetime
-
-from nsls2api.api.models.facility_model import FacilityName
-from nsls2api.infrastructure.logging import logger
-
 from typing import Optional
 
 from beanie.odm.operators.find.comparison import In
 from beanie.odm.operators.update.general import Set
 
+from nsls2api.api.models.facility_model import FacilityName
+from nsls2api.infrastructure.logging import logger
 from nsls2api.models.cycles import Cycle
 from nsls2api.models.facilities import Facility
 

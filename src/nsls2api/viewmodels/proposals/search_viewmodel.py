@@ -1,4 +1,5 @@
 from typing import Optional
+
 from fastapi import Request
 
 from nsls2api.models.proposals import Proposal

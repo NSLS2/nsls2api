@@ -1,8 +1,7 @@
 from pathlib import Path
 
 import fastapi
-from fastapi import HTTPException
-from fastapi import status
+from fastapi import HTTPException, status
 from starlette.requests import Request
 from starlette.templating import Jinja2Templates
 
