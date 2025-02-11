@@ -10,7 +10,11 @@ from nsls2api.infrastructure.logging import logger
 
 
 def create_connection_string(
-    host: str, port: int, db_name: str, username: str, password: str
+    host: str,
+    port: int,
+    db_name: str,
+    username: str | None = None,
+    password: str | None = None,
 ) -> MongoDsn:
     return MongoDsn.build(
         scheme="mongodb",

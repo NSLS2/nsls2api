@@ -38,7 +38,7 @@ async def search_for_beamline():
 async def search_for_proposal():
     print("Let's find that proposal for you")
     proposal_id = input("Enter the proposal ID that you want to find: ").strip()
-    proposal = await proposal_service.proposal_by_id(int(proposal_id))
+    proposal = await proposal_service.proposal_by_id(str(proposal_id))
     if proposal:
         print(proposal)
     else:
@@ -54,7 +54,9 @@ async def recently_updated_proposals():
 
 async def main():
     print_header()
-    await mongodb_setup.init_connection("localhost", 27017, "nsls2core-test")
+    await mongodb_setup.init_connection(
+        mongodb_setup.create_connection_string("localhost", 27017, "nsls2core-test")
+    )
     print()
     # await summary()
 
