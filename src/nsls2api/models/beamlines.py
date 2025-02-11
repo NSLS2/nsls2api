@@ -1,5 +1,6 @@
 import datetime
 from enum import StrEnum
+from typing import Optional
 
 import beanie
 import pydantic
