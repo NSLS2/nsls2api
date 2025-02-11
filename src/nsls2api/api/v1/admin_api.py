@@ -22,7 +22,9 @@ from nsls2api.services import beamline_service, proposal_service, slack_service
 
 # router = fastapi.APIRouter()
 router = fastapi.APIRouter(
-    dependencies=[Depends(validate_admin_role)], include_in_schema=True, tags=["admin"],
+    dependencies=[Depends(validate_admin_role)],
+    include_in_schema=True,
+    tags=["admin"],
 )
 
 
@@ -35,8 +37,7 @@ async def info(settings: Annotated[config.Settings, Depends(config.get_settings)
 async def check_admin_validation(
     admin_user: Annotated[ApiUser, Depends(validate_admin_role)] = None,
 ):
-    """:return: str - The username of the validated admin user.
-    """
+    """:return: str - The username of the validated admin user."""
     if admin_user is None:
         raise HTTPException(
             status_code=fastapi.status.HTTP_401_UNAUTHORIZED,
@@ -62,7 +63,8 @@ async def generate_fake_proposal(
     add_specific_user: str | None = None,
 ) -> Optional[SingleProposal]:
     proposal = await proposal_service.generate_fake_test_proposal(
-        FacilityName.nsls2, add_specific_user,
+        FacilityName.nsls2,
+        add_specific_user,
     )
 
     if proposal is None:
@@ -118,7 +120,8 @@ async def create_slack_channel(proposal_id: str) -> SlackChannelCreationResponse
         )
         if len(slack_managers) > 0:
             slack_service.add_users_to_channel(
-                channel_id=channel_id, user_ids=slack_managers,
+                channel_id=channel_id,
+                user_ids=slack_managers,
             )
             slack_managers_added.append(slack_managers)
 
