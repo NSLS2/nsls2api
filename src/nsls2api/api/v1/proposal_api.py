@@ -42,9 +42,27 @@ async def get_recent_proposals(count: int, beamline: str | None = None):
 
 
 @router.get("/proposals/commissioning", response_model=CommissioningProposalsList)
-async def get_commissioning_proposals(beamline: str | None = None):
+async def get_commissioning_proposals(
+    beamline: str | None = None, facility: FacilityName | None = None
+):
+    """
+    Get a list of commissioning proposals.  If a beamline is provided, only proposals
+    for that beamline will be returned and the facility will be ignored.
+
+    Args:
+        beamline (str optional): The beamline to filter proposals by.
+        facility (FacilityName optional): The facility to filter proposals by.
+
+    Returns:
+        CommissioningProposalsList: A list of commissioning proposals.
+
+    Raises:
+        HTTPException: If no commissioning proposals are found or an error occurs.
+    """
     try:
-        proposals = await proposal_service.commissioning_proposals(beamline=beamline)
+        proposals = await proposal_service.commissioning_proposals(
+            beamline=beamline, facility=facility
+        )
         if proposals is None:
             raise HTTPException(
                 status_code=fastapi.status.HTTP_404_NOT_FOUND,
@@ -60,10 +78,7 @@ async def get_commissioning_proposals(beamline: str | None = None):
             detail=f"An error occurred: {e}",
         )
 
-    model = CommissioningProposalsList(
-        count=len(proposals), commissioning_proposals=proposals
-    )
-    return model
+    return proposals
 
 
 @router.get(

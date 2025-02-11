@@ -5,6 +5,7 @@ from pydantic import ValidationError
 from nsls2api.api.models.facility_model import FacilityName
 from nsls2api.infrastructure import config
 from nsls2api.infrastructure.logging import logger
+from nsls2api.models.proposal_types import ProposalType
 from nsls2api.services.helpers import httpx_client_wrapper
 from nsls2api.models.cycles import Cycle
 from nsls2api.models.pass_models import (
@@ -88,6 +89,25 @@ async def get_proposal_types(
         raise PassException(error_message) from error
 
     return proposal_types
+
+
+async def get_commissioning_proposal_type(
+    facility: FacilityName = FacilityName.nsls2,
+) -> Optional[ProposalType]:
+    match facility:
+        case FacilityName.nsls2:
+            # The PASS ID for NSLS-II commissioning proposals is 300005
+            proposal = await ProposalType.find_one(ProposalType.pass_id == "300005")
+            return proposal
+        case FacilityName.lbms:
+            # The PASS ID for LBMS commissioning proposals is 300042
+            proposal = await ProposalType.find_one(ProposalType.pass_id == "300042")
+            return proposal
+        case FacilityName.cfn:
+            return None
+            # We don't have a commissioning proposal type for CFN
+        case _:
+            raise ValueError(f"Unknown facility: {facility}")
 
 
 async def get_saf_from_proposal(

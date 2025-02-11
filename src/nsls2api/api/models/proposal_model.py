@@ -3,8 +3,9 @@ from typing import Optional
 
 import pydantic
 
-from nsls2api.models.proposals import Proposal, User
+from nsls2api.api.models.facility_model import FacilityName
 from nsls2api.models.beamlines import DirectoryGranularity
+from nsls2api.models.proposals import Proposal, User
 
 
 class UsernamesList(pydantic.BaseModel):
@@ -30,6 +31,8 @@ class UsernamesList(pydantic.BaseModel):
 class CommissioningProposalsList(pydantic.BaseModel):
     count: int
     commissioning_proposals: list[str]
+    beamline: str | None = None
+    facility: FacilityName | None = None
 
 
 class CycleProposalList(pydantic.BaseModel):

@@ -6,12 +6,13 @@ import random
 from typing import Optional
 
 from beanie.odm.operators.find.array import ElemMatch
-from beanie.operators import And, In, RegEx, Text
+from beanie.operators import And, In, RegEx, Text, Or
 
 from nsls2api.api.models.facility_model import FacilityName
 from nsls2api.api.models.proposal_model import (
     ProposalDiagnostics,
     ProposalFullDetails,
+    CommissioningProposalsList,
 )
 from nsls2api.infrastructure.logging import logger
 from nsls2api.models.cycles import Cycle
@@ -21,6 +22,7 @@ from nsls2api.services import (
     bnlpeople_service,
     beamline_service,
     facility_service,
+    pass_service,
 )
 
 
@@ -284,24 +286,49 @@ async def pi_from_proposal(proposal_id: str) -> Optional[list[User]]:
 
 
 # TODO: There seems to be a data integrity issue that not all commissioning proposals have a beamline listed.
-async def commissioning_proposals(beamline: str | None = None):
+async def commissioning_proposals(beamline: str | None = None, facility: FacilityName | None = None) -> CommissioningProposalsList:
+
+    commissioning_proposal_list = []
+    proposals = None
+    query_on_facility = None
+    query_on_beamline = None
+
+    # TODO: replace this with a function call that will return all the commissioning proposal types
+    commissioning_proposal_types = ["300005", "300042"]
+
+    query = Or(*[Proposal.pass_type_id == proposal_type for proposal_type in commissioning_proposal_types])
+
+    # if there is a beamline specified then this will take precedence
     if beamline:
         # Ensure we match the case in the database for the beamline name
-        beamline = beamline.upper()
-
-        proposals = Proposal.find(In(Proposal.instruments, [beamline])).find(
-            Proposal.pass_type_id == "300005"
+        query_on_beamline = beamline.upper()
+        proposals = Proposal.find(In(Proposal.instruments, [query_on_beamline])).find(
+            query, projection_model=ProposalIdView
         )
+
+    elif facility:
+        # look up the pass proposal type id for commissioning proposals for this facility
+        query_on_facility = facility
+        proposal_type : ProposalType = await pass_service.get_commissioning_proposal_type(query_on_facility)
+        print(f"Found proposal type {proposal_type}")
+        if proposal_type:
+            proposals = Proposal.find(Proposal.pass_type_id == proposal_type.pass_id, projection_model=ProposalIdView)
     else:
         proposals = Proposal.find(
-            Proposal.pass_type_id == "300005", projection_model=ProposalIdView
+            query, projection_model=ProposalIdView
         )
 
-    commissioning_proposal_list = [
-        p.proposal_id for p in await proposals.to_list() if p.proposal_id is not None
-    ]
+    if proposals:
+        commissioning_proposal_list = [
+            p.proposal_id for p in await proposals.to_list() if p.proposal_id is not None
+        ]
 
-    return commissioning_proposal_list
+    model = CommissioningProposalsList(count=len(commissioning_proposal_list),
+                                                 commissioning_proposals=commissioning_proposal_list,
+                                                 beamline=query_on_beamline,
+                                                 facility=query_on_facility)
+
+    return model
 
 
 async def has_valid_cycle(proposal: Proposal):
@@ -310,8 +337,8 @@ async def has_valid_cycle(proposal: Proposal):
     return not (
         (len(proposal.cycles) == 0)
         and (
-            proposal.pass_type_id != 300005
-            or proposal.type == "Beamline Commissioning (beamline staff only)"
+            proposal.pass_type_id != "300005"
+            or proposal.pass_type_id != "300042"
         )
     )
 
@@ -319,7 +346,7 @@ async def has_valid_cycle(proposal: Proposal):
 async def is_commissioning(proposal: Proposal):
     return (
         proposal.pass_type_id == "300005"
-        or proposal.type == "Beamline Commissioning (beamline staff only)"
+        or proposal.pass_type_id == "300042"
     )
 
 
