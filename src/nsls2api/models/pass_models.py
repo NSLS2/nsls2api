@@ -1,6 +1,6 @@
 from typing import Optional
-import pydantic
 
+import pydantic
 from pydantic import ConfigDict
 
 

@@ -6,7 +6,7 @@ from uuid import UUID, uuid4
 import beanie
 import pydantic
 import pymongo
-from beanie import Link, BackLink
+from beanie import BackLink, Link
 from pydantic import Field
 
 

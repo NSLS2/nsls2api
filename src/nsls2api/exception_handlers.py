@@ -1,8 +1,9 @@
-from nsls2api.main import app
 from asgi_correlation_id import correlation_id
 from fastapi import HTTPException, Request
 from fastapi.exception_handlers import http_exception_handler
 from fastapi.responses import JSONResponse
+
+from nsls2api.main import app
 
 
 # This is to make sure we add the request ID to the response headers for the case

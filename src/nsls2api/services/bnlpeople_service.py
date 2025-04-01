@@ -1,10 +1,11 @@
-from typing import Optional, List
+from typing import List, Optional
 
-from nsls2api.infrastructure.logging import logger
-
-from nsls2api.services.helpers import _call_async_webservice_with_client
 from nsls2api.api.models.person_model import BNLPerson
-from nsls2api.services.helpers import httpx_client_wrapper
+from nsls2api.infrastructure.logging import logger
+from nsls2api.services.helpers import (
+    _call_async_webservice_with_client,
+    httpx_client_wrapper,
+)
 
 base_url = "https://api.bnl.gov/BNLPeople"
 
@@ -37,7 +38,7 @@ async def get_username_by_id(lifenumber: str) -> Optional[str]:
     logger.debug(f"Calling URL: {url}")
     try:
         person = await _call_bnlpeople_webservice(url)
-    except Exception as error:
+    except Exception:
         message = f"BNL People API query failed for lifenumber {lifenumber}"
         logger.exception(message)
         return None

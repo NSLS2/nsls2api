@@ -1,8 +1,9 @@
 from typing import Optional
+
 from starlette.requests import Request
+
 from nsls2api.api.models.proposal_model import ProposalDiagnostics
 from nsls2api.services import proposal_service
-
 from nsls2api.viewmodels.proposals.details_viewmodel import DetailsViewModel
 
 

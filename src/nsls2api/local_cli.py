@@ -6,9 +6,7 @@ It is just here for now to test some functionality before I add the API and use 
 import asyncio
 
 from nsls2api.infrastructure import mongodb_setup
-from nsls2api.services import beamline_service
-from nsls2api.services import facility_service
-from nsls2api.services import proposal_service
+from nsls2api.services import beamline_service, facility_service, proposal_service
 
 
 def print_header():

@@ -1,14 +1,13 @@
 from typing import Optional
 
 from N2SNUserTools.ldap import ADObjects
-from nsls2api.infrastructure.logging import logger
-
 
 from nsls2api.api.models.person_model import (
     ActiveDirectoryUser,
     ActiveDirectoryUserGroups,
 )
 from nsls2api.infrastructure.config import get_settings
+from nsls2api.infrastructure.logging import logger
 
 settings = get_settings()
 

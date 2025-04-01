@@ -5,7 +5,7 @@ import beanie
 import pydantic
 import pymongo
 
-from nsls2api.models.slack_models import ProposalSlackChannel, SlackChannel
+from nsls2api.models.slack_models import SlackChannel
 
 
 class SafetyForm(pydantic.BaseModel):

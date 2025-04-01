@@ -2,18 +2,18 @@
 from typing import Optional
 
 from nsls2api.api.models.person_model import (
-    Person,
     ActiveDirectoryUser,
-    PersonSummary,
     DataSessionAccess,
+    Person,
+    PersonSummary,
 )
 from nsls2api.services import (
+    beamline_service,
     bnlpeople_service,
     facility_service,
-    beamline_service,
+    n2sn_service,
     proposal_service,
 )
-from nsls2api.services import n2sn_service
 from nsls2api.services.pass_service import get_proposals_by_person
 
 

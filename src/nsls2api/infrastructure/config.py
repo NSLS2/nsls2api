@@ -2,8 +2,10 @@ import os
 from functools import lru_cache
 from pathlib import Path
 
-from pydantic import MongoDsn, HttpUrl
+from pydantic import HttpUrl, MongoDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+from nsls2api.infrastructure.logging import logger
 
 
 class Settings(BaseSettings):
@@ -84,6 +86,9 @@ def get_settings() -> Settings:
 
     :returns: The dictionary of current settings.
     """
+
+    logger.info(f"Settings file: {str(Path(__file__).parent.parent / '.env')}")
+
     if os.environ.get("PYTEST_VERSION") is not None:
         PROJ_SRC_PATH = Path(__file__).parent.parent
         test_env_file = str(PROJ_SRC_PATH / "pytest.env")
