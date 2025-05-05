@@ -22,3 +22,4 @@ class StatsModel(pydantic.BaseModel):
 class AboutModel(pydantic.BaseModel):
     description: str
     version: str
+    container_info: Optional[str] = None
