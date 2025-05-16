@@ -85,7 +85,9 @@ async def fetch_proposals_for_cycle(
     )
     if cycle is None:
         raise LookupError(f"Cycle {cycle} not found in local database.")
-    return cycle.proposals
+
+    # Return an empty list if cycle.proposals is None to ensure a consistent return type.
+    return cycle.proposals or []
 
 
 async def fetch_data_sessions_for_username(username: str) -> list[str]:

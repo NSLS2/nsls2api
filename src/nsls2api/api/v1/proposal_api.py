@@ -128,10 +128,12 @@ async def get_proposal_by_saf(saf_id: str):
             status_code=fastapi.status.HTTP_404_NOT_FOUND, detail=e.args[0]
         )
     except Exception as e:
-        logger.error(f"An unexpected error occurred while fetching proposal by Proposal ID: {e}")
+        logger.error(
+            f"An unexpected error occurred while fetching proposal by Proposal ID: {e}"
+        )
         raise HTTPException(
             status_code=fastapi.status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"An internal server error occurred.",
+            detail="An internal server error occurred.",
         )
 
     response_model = SingleProposal(proposal=proposal)
@@ -147,10 +149,12 @@ async def get_proposal(proposal_id: str):
             status_code=fastapi.status.HTTP_404_NOT_FOUND, detail=e.args[0]
         )
     except Exception as e:
-        logger.error(f"An unexpected error occurred while fetching proposal by SAF ID: {e}")
+        logger.error(
+            f"An unexpected error occurred while fetching proposal by SAF ID: {e}"
+        )
         raise HTTPException(
             status_code=fastapi.status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"An internal server error occurred.",
+            detail="An internal server error occurred.",
         )
 
     response_model = SingleProposal(proposal=proposal)
