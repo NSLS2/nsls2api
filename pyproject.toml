@@ -1,10 +1,10 @@
 [build-system]
-requires = ["hatchling", "hatch-vcs", "hatch-requirements-txt"]
+requires = ["hatchling", "uv-dynamic-versioning"]
 build-backend = "hatchling.build"
 
 [project]
 name = "nsls2api"
-dynamic = ["version", "dependencies"]
+dynamic = ["version"]
 description = ''
 readme = "README.md"
 requires-python = ">=3.11"
@@ -29,15 +29,13 @@ nsls2api = "nsls2api.cli.cli:app"
 [project.urls]
 Source = "https://github.com/nsls2/nsls2api/"
 
-[tool.hatch]
-version.source = "vcs"
+[tool.hatch.version]
+source = "uv-dynamic-versioning"
 
-[tool.hatch.metadata.hooks.requirements_txt]
-files = ["requirements.txt"]
-
-[tool.hatch.build]
-packages = ["src/nsls2api"]
-hooks.vcs.version-file = "src/nsls2api/_version.py"
+[tool.uv-dynamic-versioning]
+vcs = "git"
+style = "pep440"
+bump = true
 
 [tool.hatch.build.targets.sdist]
 exclude = [

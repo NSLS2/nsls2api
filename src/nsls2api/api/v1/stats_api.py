@@ -1,6 +1,6 @@
+
 import fastapi
 
-from nsls2api._version import version as api_version
 from nsls2api.api.models.facility_model import FacilityName
 from nsls2api.api.models.stats_model import (
     AboutModel,
@@ -13,6 +13,7 @@ from nsls2api.services import (
     facility_service,
     proposal_service,
 )
+from nsls2api.version import get_version
 
 router = fastapi.APIRouter()
 
@@ -78,5 +79,7 @@ async def stats():
 
 @router.get("/about", response_model=AboutModel)
 async def about():
+    api_version = get_version()
+    logger.info(f"API version: {api_version}")
     model = AboutModel(version=api_version, description="NSLS-II Facility API")
     return model

@@ -1,3 +1,4 @@
+import importlib.metadata
 import sys
 from typing import Optional
 
@@ -11,8 +12,12 @@ from rich.text import Text
 from rich.theme import Theme
 
 from nsls2api.cli import admin, api, auth, beamline, environment, facility, proposal
+from nsls2api.version import get_version
 
-app = typer.Typer(help="NSLS-II API Command Line Interface", no_args_is_help=True)
+# Remove no_args_is_help and add invoke_without_command to allow version option without subcommand.
+app = typer.Typer(
+    help="NSLS-II API Command Line Interface", invoke_without_command=True
+)
 
 # Register sub-commands
 app.add_typer(admin.app, name="admin", help="Administrative commands")
@@ -58,16 +63,11 @@ def create_command_panel(command_name: str, commands: dict) -> Panel:
 
 def show_welcome():
     """Display welcome message and version information"""
-    try:
-        from nsls2api._version import version
-
-        version_str = version
-    except ImportError:
-        version_str = "unknown"
+    version = get_version()
 
     welcome_panel = Panel(
         Text("Welcome to the NSLS-II API Command Line Interface", style="info"),
-        subtitle=f"Version: {version_str}",
+        subtitle=f"Version: {version}",
         border_style="cyan",
         box=box.DOUBLE,
     )
@@ -132,10 +132,9 @@ def main(
     """
     if version:
         try:
-            from nsls2api._version import version as ver
-
-            console.print(f"[info]NSLS-II API CLI version: {ver}")
-        except ImportError:
+            version = get_version()
+            console.print(f"[info]NSLS-II API CLI version: {version}")
+        except importlib.metadata.PackageNotFoundError:
             console.print("[warning]Version information not available")
         raise typer.Exit()
 

@@ -23,5 +23,6 @@ slack-bolt
 textual
 typer
 uuid
+uv-dynamic-versioning
 uvicorn
 Werkzeug
