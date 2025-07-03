@@ -21,6 +21,7 @@ class User(pydantic.BaseModel):
     bnl_id: Optional[str] = None
     username: Optional[str] = None
     is_pi: bool = False
+    orcid: Optional[str] = None
 
 
 # -- Shared Base --

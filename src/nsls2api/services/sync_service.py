@@ -149,7 +149,7 @@ async def worker_synchronize_cycles_from_pass(
 
     time_taken = datetime.datetime.now() - start_time
     logger.info(
-        f"Cycle information (for {facility.name}) synchronized in {time_taken.total_seconds():,.2f} seconds"
+        f"Cycle information (for {facility_name}) synchronized in {time_taken.total_seconds():,.2f} seconds"
     )
 
 
@@ -182,7 +182,7 @@ async def worker_synchronize_proposal_types_from_pass(
             pass_description=pass_proposal_type.Description,
         )
 
-        response = await ProposalType.find_one(
+        await ProposalType.find_one(
             ProposalType.pass_id == str(pass_proposal_type.ID)
         ).upsert(
             Set(
@@ -199,9 +199,8 @@ async def worker_synchronize_proposal_types_from_pass(
         )
 
     time_taken = datetime.datetime.now() - start_time
-    logger.debug(f"Response: {response}")
     logger.info(
-        f"Proposal type information (for {facility.name}) synchronized in {time_taken.total_seconds():,.2f} seconds"
+        f"Proposal type information (for {facility_name}) synchronized in {time_taken.total_seconds():,.2f} seconds"
     )
 
 
@@ -236,7 +235,7 @@ async def synchronize_proposal_from_pass(
             SafetyForm(
                 saf_id=str(saf.SAF_ID),
                 status=saf.Status,
-                instruments=set(saf_beamline_list),
+                instruments=list(set(saf_beamline_list)),
             )
         )
 
@@ -278,6 +277,7 @@ async def synchronize_proposal_from_pass(
             bnl_id=user.BNL_ID,
             username=bnl_username,
             is_pi=user_is_pi,
+            orcid=user.ORCID_ID,
         )
         user_list.append(userinfo)
 
@@ -305,7 +305,7 @@ async def synchronize_proposal_from_pass(
         data_session=data_session,
         pass_type_id=str(pass_proposal.Proposal_Type_ID),
         type=pass_proposal.Proposal_Type_Description,
-        instruments=set(beamline_list),
+        instruments=list(set(beamline_list)),
         safs=saf_list,
         users=user_list,
         last_updated=datetime.datetime.now(),
@@ -353,9 +353,12 @@ async def update_proposals_with_cycle(
 
         try:
             proposal = await proposal_service.proposal_by_id(proposal_id)
-            await proposal.update(AddToSet({Proposal.cycles: cycle_name}))
-            proposal.last_updated = datetime.datetime.now()
-            await proposal.save()
+            if proposal is not None:
+                await proposal.update(AddToSet({Proposal.cycles: cycle_name}))
+                proposal.last_updated = datetime.datetime.now()
+                await proposal.save()  # type: ignore[union-attr]
+            else:
+                logger.warning(f"Proposal with ID {proposal_id} not found.")
         except LookupError as error:
             logger.warning(error)
 
