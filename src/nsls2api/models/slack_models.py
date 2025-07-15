@@ -1,9 +1,41 @@
+from datetime import datetime
+
 import pydantic
 
 
 class SlackUser(pydantic.BaseModel):
     user_id: str
     username: str
+    real_name: str | None = None
+    is_bot: bool = False
+    pending_invitation: bool = False
+
+
+class SlackUserProfile(pydantic.BaseModel):
+    """
+    Represents a Slack user's profile information.
+
+    Attributes:
+        display_name (str | None): The display name of the user.
+        email (str | None): The email address of the user.
+        first_name (str | None): The user's first name.
+        last_name (str | None): The user's last name.
+        status_emoji (str | None): The emoji set as the user's status such as :train:.
+        status_text (str | None): The displayed status text of up to 100 characters.
+        status_expiration (datetime | None): Unix timestamp of when the status will expire.
+        team (str | None): The ID of the team the user is on.
+        title (str | None): The user's title or role.
+    """
+
+    display_name: str | None = None
+    email: str | None = None
+    first_name: str | None = None
+    last_name: str | None = None
+    status_emoji: str | None = None
+    status_text: str | None = pydantic.Field(default=None, max_length=100)
+    status_expiration: datetime | None = None
+    team: str | None = None
+    title: str | None = None
 
 
 class SlackPerson(SlackUser):
@@ -45,3 +77,17 @@ class SlackChannelResponseModel(pydantic.BaseModel):
 class ProposalSlackChannelList(pydantic.BaseModel):
     slack_channels: list[ProposalSlackChannel]
     count: int
+
+
+class SlackConversation(pydantic.BaseModel):
+    conversation_id: str
+    name: str
+    is_private: bool
+    topic: str | None = None
+    purpose: str | None = None
+    creator: str | None = None
+    is_archived: bool = False
+    updated: datetime | None = None
+    created: datetime | None = None
+    num_members: int = 0
+    members: list[SlackUser] | None = None

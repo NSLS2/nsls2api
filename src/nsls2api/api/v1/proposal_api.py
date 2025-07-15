@@ -18,8 +18,13 @@ from nsls2api.api.models.proposal_model import (
 )
 from nsls2api.infrastructure.logging import logger
 from nsls2api.infrastructure.security import get_current_user, validate_admin_role
-from nsls2api.models.slack_models import ProposalSlackChannel, SlackChannel
+from nsls2api.models.slack_models import (
+    ProposalSlackChannel,
+    SlackChannel,
+    SlackConversation,
+)
 from nsls2api.services import proposal_service, slack_service
+from nsls2api.services.slack_service import get_conversation_details
 
 router = fastapi.APIRouter(dependencies=[Depends(get_current_user)])
 
@@ -280,7 +285,7 @@ async def get_proposal_directories(proposal_id: str) -> ProposalDirectoriesList:
 @router.get("/proposal/{proposal_id}/slack-channels")
 async def get_slack_channels_for_proposal(
     proposal_id: str,
-) -> list[SlackChannel]:
+) -> list[SlackConversation]:
     try:
         channels = await proposal_service.slack_channels_for_proposal(proposal_id)
         if channels is None:
@@ -298,7 +303,14 @@ async def get_slack_channels_for_proposal(
             detail=f"An error occurred: {e}",
         )
 
-    return channels
+    logger.info(f"Slack conversations for proposal {channels}")
+
+    conversations = []
+    for channel in channels:
+        conversations.append(get_conversation_details(channel.channel_id))
+
+    logger.info(conversations)
+    return conversations
 
 
 @router.post(

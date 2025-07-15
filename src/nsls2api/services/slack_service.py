@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 
 from slack_sdk import WebClient
@@ -9,6 +10,7 @@ from nsls2api.models.slack_models import (
     ProposalSlackChannel,
     SlackBot,
     SlackChannelToCreate,
+    SlackConversation,
     SlackPerson,
     SlackUser,
 )
@@ -155,21 +157,25 @@ def get_bot_details() -> SlackBot:
 
 def get_user_info(user_id: str) -> Optional[SlackUser]:
     """
-    Retrieves the details of a Slack User .
+    Retrieves the details of a Slack User.
 
     Args:
-        user_id (str) : Slack user_id to lookup
+        user_id (str): Slack user_id to lookup
 
     Returns:
         SlackUser: An instance of the SlackUser class containing the user details.
     """
     client = WebClient(token=settings.slack_bot_token)
     try:
-        response = client.users_info(user_id=user_id)
-        return SlackUser(
-            username=response.get("user", ""),
-            user_id=response.get("user_id", user_id),
+        response = client.users_info(user=user_id)
+        slack_user = SlackUser(
+            username=response.get("user", {}).get("name", ""),
+            user_id=response.get("user", {}).get("id", user_id),
+            is_bot=response.get("user", {}).get("is_bot", False),
+            real_name=response.get("user", {}).get("real_name", ""),
+            pending_invitation=response.get("user", {}).get("accepted_invitation", False),
         )
+        return slack_user
     except SlackApiError as error:
         logger.exception(error)
 
@@ -244,7 +250,7 @@ def get_channel_members(channel_id: str) -> list[str]:
     """
     try:
         client = WebClient(token=settings.slack_bot_token)
-        response = client.conversations_members(channel=channel_id)
+        response = client.conversations_members(channel=channel_id, limit=1000)
     except SlackApiError as error:
         logger.exception(error)
         return []
@@ -266,7 +272,7 @@ async def is_channel_private(channel_id: str) -> bool:
     return response.get("channel").get("is_private")
 
 
-def retrieve_private_channel_id(name: str) -> str | None:
+def get_private_channel_id(name: str) -> str | None:
     """
     Retrieves the channel ID for a given private channel name.
 
@@ -283,6 +289,53 @@ def retrieve_private_channel_id(name: str) -> str | None:
         if channel.get("name") == name:
             logger.info(f"Found existing channel '{name}' with ID {channel['id']}")
             return channel.get("id")
+    return None
+
+
+def get_conversation_details(channel_id: str) -> SlackConversation | None:
+    """
+    Retrieves detailed information about a Slack conversation (channel).
+
+    Args:
+        channel_id (str): The ID of the Slack channel.
+
+    Returns:
+        SlackConversation | None: An instance of the SlackConversation class containing
+            the channel details if successful, None otherwise.
+    """
+    client = WebClient(token=settings.slack_bot_token)
+    try:
+        info_response = client.conversations_info(
+            channel=channel_id, include_num_members=True
+        )
+
+        channel_users = []
+        slack_userid_list = get_channel_members(channel_id)
+        for slack_userid in slack_userid_list:
+            user_info = get_user_info(user_id=slack_userid)
+            if user_info:
+                channel_users.append(user_info)
+
+        details = SlackConversation(
+            conversation_id=channel_id,
+            name=info_response.get("channel", {}).get("name", ""),
+            is_private=info_response.get("channel", {}).get("is_private", False),
+            topic=info_response.get("channel", {}).get("topic", {}).get("value", ""),
+            purpose=info_response.get("channel").get("purpose", {}).get("value", ""),
+            creator=info_response.get("channel", {}).get("creator", ""),
+            is_archived=info_response.get("channel", {}).get("is_archived", False),
+            updated=datetime.fromtimestamp(
+                info_response.get("channel", {}).get("updated", 0) / 1000.0
+            ),
+            created=datetime.fromtimestamp(
+                info_response.get("channel", {}).get("created", 0)
+            ),
+            num_members=info_response.get("channel", {}).get("num_members", 0),
+            members=channel_users,
+        )
+        return details
+    except SlackApiError as error:
+        logger.exception(error)
     return None
 
 
@@ -409,7 +462,7 @@ async def create_proposal_channels(
             logger.info(f"Created Channel '{channel_name}' with an ID of {channel_id}")
         except ChannelAlreadyExistsError:
             logger.info(f"Channel '{channel_name}' already exists.")
-            channel_id = retrieve_private_channel_id(channel_name)
+            channel_id = get_private_channel_id(channel_name)
 
         # Create a new proposal channel object to store the details
         proposal_channel = ProposalSlackChannel(
