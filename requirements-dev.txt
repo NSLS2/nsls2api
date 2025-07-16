@@ -26,8 +26,6 @@ asyncer==0.0.8
     # via -r requirements-dev.in
 attrs==25.3.0
     # via aiohttp
-backports-tarfile==1.2.0
-    # via jaraco-context
 bidict==0.23.1
     # via python-socketio
 black==25.1.0
@@ -38,14 +36,12 @@ brotli==1.1.0
     # via geventhttpclient
 bunnet==1.3.0
     # via -r requirements-dev.in
-certifi==2025.6.15
+certifi==2025.7.14
     # via
     #   geventhttpclient
     #   httpcore
     #   httpx
     #   requests
-cffi==1.17.1
-    # via cryptography
 cfgv==3.4.0
     # via pre-commit
 charset-normalizer==3.4.2
@@ -65,10 +61,8 @@ configargparse==1.7.1
     # via
     #   locust
     #   locust-cloud
-coverage==7.9.1
+coverage==7.9.2
     # via -r requirements-dev.in
-cryptography==45.0.5
-    # via secretstorage
 decorator==5.2.1
     # via ipython
 distlib==0.3.9
@@ -77,7 +71,7 @@ dnspython==2.7.0
     # via pymongo
 executing==2.2.0
     # via stack-data
-fastapi-cli==0.0.7
+fastapi-cli==0.0.8
     # via -r requirements-dev.in
 filelock==3.18.0
     # via virtualenv
@@ -137,11 +131,9 @@ idna==3.10
     #   hyperlink
     #   requests
     #   yarl
-importlib-metadata==8.7.0
-    # via keyring
 iniconfig==2.1.0
     # via pytest
-ipython==9.3.0
+ipython==9.4.0
     # via -r requirements-dev.in
 ipython-pygments-lexers==1.1.1
     # via ipython
@@ -155,10 +147,6 @@ jaraco-functools==4.2.1
     # via keyring
 jedi==0.19.2
     # via ipython
-jeepney==0.9.0
-    # via
-    #   keyring
-    #   secretstorage
 jinja2==3.1.6
     # via
     #   aiohttp-jinja2
@@ -170,11 +158,11 @@ lazy-model==0.2.0
     # via bunnet
 linkify-it-py==2.0.3
     # via markdown-it-py
-locust==2.37.11
+locust==2.37.14
     # via -r requirements-dev.in
-locust-cloud==1.24.2
+locust-cloud==1.26.3
     # via locust
-markdown-it-py[linkify,plugins]==3.0.0
+markdown-it-py==3.0.0
     # via
     #   mdit-py-plugins
     #   rich
@@ -253,8 +241,6 @@ ptyprocess==0.7.0
     # via pexpect
 pure-eval==0.2.3
     # via stack-data
-pycparser==2.22
-    # via cffi
 pydantic==2.11.7
     # via
     #   bunnet
@@ -269,13 +255,13 @@ pygments==2.19.2
     #   rich
 pymongo==4.13.2
     # via bunnet
-pyright==1.1.402
+pyright==1.1.403
     # via -r requirements-dev.in
 pytest==8.4.1
     # via
     #   -r requirements-dev.in
     #   pytest-asyncio
-pytest-asyncio==1.0.0
+pytest-asyncio==1.1.0
     # via -r requirements-dev.in
 python-dotenv==1.1.1
     # via uvicorn
@@ -283,7 +269,7 @@ python-engineio==4.12.2
     # via
     #   locust-cloud
     #   python-socketio
-python-socketio[client]==5.13.0
+python-socketio==5.13.0
     # via locust-cloud
 pyyaml==6.0.2
     # via
@@ -302,12 +288,16 @@ rich==14.0.0
     #   textual
     #   textual-serve
     #   typer
-rich-toolkit==0.14.7
+rich-toolkit==0.14.8
     # via fastapi-cli
-ruff==0.12.1
+ruff==0.12.3
     # via -r requirements-dev.in
-secretstorage==3.3.3
-    # via keyring
+setuptools==80.9.0
+    # via
+    #   locust
+    #   setuptools-scm
+    #   zope-event
+    #   zope-interface
 setuptools-scm==8.3.1
     # via hatch-vcs
 shellingham==1.5.4
@@ -322,7 +312,7 @@ sniffio==1.3.1
     #   asgi-lifespan
 stack-data==0.6.3
     # via ipython
-textual==3.5.0
+textual==4.0.0
     # via
     #   textual-dev
     #   textual-serve
@@ -344,11 +334,10 @@ trove-classifiers==2025.5.9.12
     # via hatchling
 typer==0.16.0
     # via fastapi-cli
-typing-extensions==4.14.0
+typing-extensions==4.14.1
     # via
     #   aiosignal
     #   anyio
-    #   ipython
     #   pydantic
     #   pydantic-core
     #   pyright
@@ -367,12 +356,12 @@ urllib3==2.5.0
     #   requests
 userpath==1.9.2
     # via hatch
-uv==0.7.17
+uv==0.7.21
     # via
     #   -r requirements-dev.in
     #   hatch
     #   pre-commit-uv
-uvicorn[standard]==0.35.0
+uvicorn==0.35.0
     # via fastapi-cli
 uvloop==0.21.0
     # via uvicorn
@@ -398,8 +387,6 @@ wsproto==1.2.0
     # via simple-websocket
 yarl==1.20.1
     # via aiohttp
-zipp==3.23.0
-    # via importlib-metadata
 zope-event==5.1
     # via gevent
 zope-interface==7.2
