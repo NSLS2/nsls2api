@@ -18,7 +18,7 @@ async-timeout==5.0.1
     # via httpx-socks
 beanie==1.30.0
     # via -r requirements.in
-certifi==2025.6.15
+certifi==2025.7.14
     # via
     #   httpcore
     #   httpx
@@ -165,7 +165,7 @@ starlette==0.46.2
     #   asgi-correlation-id
     #   fastapi
     #   prometheus-fastapi-instrumentator
-textual==3.5.0
+textual==4.0.0
     # via -r requirements.in
 tomlkit==0.13.3
     # via uv-dynamic-versioning
