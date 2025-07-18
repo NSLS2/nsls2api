@@ -16,6 +16,16 @@ custom_theme = Theme(
         "env.dev": "yellow",
         "env.local": "green",
         "env.custom": "cyan",
+        "bnl.teal": "#105c78",
+        "bnl.cerulean": "#00addc",
+        "bnl.lime": "#b2d33b",
+        "bnl.orange": "#f68b1f",
+        "bnl.fuchsia": "#b72467",
+        "bnl.goldenrod": "#ffcd34",
+        "bnl.crimson": "#db3526",
+        "bnl.violet": "#51499e",
+        "bnl.cornflower": "#4881c3",
+        "bnl.jade": "#25b574",
     }
 )
 
