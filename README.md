@@ -8,6 +8,9 @@ This is the repository for the NSLS-II Facility API codebase.
 
 [![Integration Tests for DEV API](https://github.com/NSLS2/nsls2api/actions/workflows/test-dev-deployment.yml/badge.svg)](https://github.com/NSLS2/nsls2api/actions/workflows/test-dev-deployment.yml)
 
+[![Data Consistency Checks between DEV and PROD APIs](https://github.com/NSLS2/nsls2api/actions/workflows/data-consistency-workflow.yml/badge.svg)](https://github.com/NSLS2/nsls2api/actions/workflows/data-consistency-workflow.yml)
+
+
 ## Developer Notes
 
 In order to develop locally you will need to have a local MongoDB running.  

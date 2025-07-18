@@ -1,0 +1,89 @@
+@devHost = https://api-dev.nsls2.bnl.gov
+@prodHost = https://api.nsls2.bnl.gov
+
+### 1. Fetch beamlines from DEV and stash raw JSON
+GET {{devHost}}/v1/beamlines
+Accept: application/json
+
+> {%
+  client.global.set("devRaw", JSON.stringify(response.body));
+%}
+
+### 2. Fetch beamlines from PROD and diff, showing only changed fields + name
+GET {{prodHost}}/v1/beamlines
+Accept: application/json
+
+> {%
+  const ignore = ["created_on", "last_updated"];
+
+  function prune(x) {
+    if (Array.isArray(x)) return x.map(prune);
+    if (x && typeof x === "object") {
+      const out = {};
+      for (const k of Object.keys(x)) {
+        if (!ignore.includes(k)) out[k] = prune(x[k]);
+      }
+      return out;
+    }
+    return x;
+  }
+
+  const devList  = prune(JSON.parse(client.global.get("devRaw")));
+  const prodList = prune(response.body);
+
+  const devMap  = new Map(devList.map(o => [o._id, o]));
+  const prodMap = new Map(prodList.map(o => [o._id, o]));
+
+  function diffObject(a, b) {
+    const allKeys = new Set([...Object.keys(a), ...Object.keys(b)]);
+    const diffs = {};
+    for (const key of allKeys) {
+      if (JSON.stringify(a[key]) !== JSON.stringify(b[key])) {
+        diffs[key] = { dev: a[key], prod: b[key] };
+      }
+    }
+    return diffs;
+  }
+
+  const diffs = [];
+  // check for missing or changed
+  for (const [id, devItem] of devMap) {
+    const prodItem = prodMap.get(id);
+    if (!prodItem) {
+      diffs.push({
+        _id: id,
+        name: devItem.name,
+        status: "missingInProd"
+      });
+    }
+    else {
+      const changed = diffObject(devItem, prodItem);
+      if (Object.keys(changed).length) {
+        diffs.push({
+          _id: id,
+          name: devItem.name,
+          status: "mismatch",
+          diff: changed
+        });
+      }
+    }
+  }
+  // check for new in prod
+  for (const [id, prodItem] of prodMap) {
+    if (!devMap.has(id)) {
+      diffs.push({
+        _id: id,
+        name: prodItem.name,
+        status: "newInProd"
+      });
+    }
+  }
+
+  client.test("DEV vs PROD (only listing actual differences, with names)", () => {
+    client.assert(
+      diffs.length === 0,
+      `Found ${diffs.length} difference(s):\n` +
+      JSON.stringify(diffs, null, 2)
+    );
+  });
+%}
