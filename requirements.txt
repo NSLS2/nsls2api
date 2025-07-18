@@ -18,7 +18,7 @@ async-timeout==5.0.1
     # via httpx-socks
 beanie==1.30.0
     # via -r requirements.in
-certifi==2025.6.15
+certifi==2025.7.14
     # via
     #   httpcore
     #   httpx
@@ -33,11 +33,11 @@ decorator==5.2.1
     # via gssapi
 dnspython==2.7.0
     # via pymongo
-dunamai==1.24.1
+dunamai==1.25.0
     # via uv-dynamic-versioning
-faker==37.4.0
+faker==37.4.2
     # via -r requirements.in
-fastapi==0.115.14
+fastapi==0.116.1
     # via -r requirements.in
 gssapi==1.9.0
     # via n2snusertools
@@ -154,18 +154,18 @@ shellingham==1.5.4
     # via typer
 slack-bolt==1.23.0
     # via -r requirements.in
-slack-sdk==3.35.0
+slack-sdk==3.36.0
     # via
     #   -r requirements.in
     #   slack-bolt
 sniffio==1.3.1
     # via anyio
-starlette==0.46.2
+starlette==0.47.1
     # via
     #   asgi-correlation-id
     #   fastapi
     #   prometheus-fastapi-instrumentator
-textual==3.5.0
+textual==4.0.0
     # via -r requirements.in
 tomlkit==0.13.3
     # via uv-dynamic-versioning
@@ -173,13 +173,14 @@ trove-classifiers==2025.5.9.12
     # via hatchling
 typer==0.16.0
     # via -r requirements.in
-typing-extensions==4.14.0
+typing-extensions==4.14.1
     # via
     #   anyio
     #   beanie
     #   fastapi
     #   pydantic
     #   pydantic-core
+    #   starlette
     #   textual
     #   typer
     #   typing-inspection
