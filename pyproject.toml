@@ -7,7 +7,7 @@ name = "nsls2api"
 dynamic = ["version", "dependencies"]
 description = ''
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 license = "BSD-3-Clause"
 authors = [
     { name = "Stuart Campbell", email = "scampbell@bnl.gov" },
@@ -17,7 +17,6 @@ classifiers = [
     "License :: OSI Approved :: BSD License",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: Implementation :: CPython",
@@ -57,7 +56,7 @@ exclude = [
 #dev = ["requirements-dev.txt"]
 
 [tool.black]
-target_version = ['py311']
+target_version = ['py312']
 include = '\.pyi?$'
 
 [tool.pytest.ini_options]
