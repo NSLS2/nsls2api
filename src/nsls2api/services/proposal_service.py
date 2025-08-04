@@ -31,7 +31,10 @@ from nsls2api.services import (
 
 
 async def get_locked_proposals(
-    cycles: list[str], beamlines: list[str]
+    cycles: list[str],
+    beamlines: list[str],
+    page_size: int = 10,
+    page: int = 1,
 ) -> LockedProposalsList:
     locked_proposals = None
     uppercase_beamline = []
@@ -59,10 +62,17 @@ async def get_locked_proposals(
     else:
         query = Proposal.locked == True
 
-    locked_proposals = await Proposal.find_many(query).to_list()
+    locked_proposals = (
+        await Proposal.find_many(query)
+        .limit(page_size)
+        .skip(page_size * (page - 1))
+        .to_list()
+    )
     locked_model = LockedProposalsList(
         count=len(locked_proposals),
         locked_proposals=locked_proposals,
+        page_size=page_size,
+        page=page,
     )
 
     return locked_model
