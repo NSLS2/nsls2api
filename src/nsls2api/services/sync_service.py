@@ -81,14 +81,11 @@ async def worker_synchronize_dataadmins(skip_beamlines=False) -> None:
             f"Beamline Data Admin permissions synchronized in {time_taken.total_seconds():,.2f} seconds"
         )
 
-
 async def worker_synchronize_cycles_from_pass(
     facility_name: FacilityName = FacilityName.nsls2,
 ) -> None:
     """
-    This method synchronizes the cycles for a facility from PASS.
-
-    :param facility_name: The facility name (FacilityName).
+    Synchronize cycles for a facility from PASS and set the current cycle to today's date.
     """
     start_time = datetime.datetime.now()
 
@@ -136,7 +133,7 @@ async def worker_synchronize_cycles_from_pass(
             response_type=UpdateResponse.NEW_DOCUMENT,
         )
 
-        # Now let's update the list of proposals for this cycle
+        # Update proposals for this cycle
         proposals_list = await pass_service.get_proposals_allocated_by_cycle(
             cycle.name, facility=facility_name
         )
@@ -146,6 +143,23 @@ async def worker_synchronize_cycles_from_pass(
             )
             updated_cycle.last_updated = datetime.datetime.now()
             await updated_cycle.save()
+
+    # --- Set current operating cycle to today's date ---
+    today = datetime.datetime.now()
+    found_cycle = await facility_service.facility_cycle_by_date(facility_name, today)
+    if not found_cycle:
+        logger.warning(
+            f"No cycle found for today's date in facility {facility_name}"
+        )
+    else:
+        logger.info(
+            f"Found cycle {found_cycle.name} for today's date in facility {facility_name}"
+        )
+        # Set the current operating cycle for the facility
+        await facility_service.set_current_operating_cycle(facility_name, found_cycle.name)
+        logger.info(
+            f"Set current operating cycle for {facility_name} to {found_cycle.name}"
+        )
 
     time_taken = datetime.datetime.now() - start_time
     logger.info(
