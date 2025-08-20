@@ -3,19 +3,16 @@ from fastapi import Depends
 
 from nsls2api.api.models.facility_model import (
     FacilityCurrentOperatingCycleResponseModel,
-    FacilityCyclesResponseModel,
-    FacilityName,
-)
+    FacilityCycleDetailsResponseModel, FacilityCyclesResponseModel,
+    FacilityName)
 from nsls2api.api.models.proposal_model import CycleProposalList
 from nsls2api.infrastructure.logging import logger
 from nsls2api.infrastructure.security import validate_admin_role
 from nsls2api.services import facility_service, proposal_service
-from nsls2api.services.facility_service import (
-    CycleNotFoundError,
-    CycleOperationError,
-    CycleUpdateError,
-    CycleVerificationError,
-)
+from nsls2api.services.facility_service import (CycleNotFoundError,
+                                                CycleOperationError,
+                                                CycleUpdateError,
+                                                CycleVerificationError)
 
 router = fastapi.APIRouter()
 
@@ -131,3 +128,39 @@ async def get_proposals_for_cycle(facility: FacilityName, cycle: str):
         cycle=cycle, proposals=proposal_list, count=len(proposal_list)
     )
     return model
+
+
+@router.get(
+    "/facility/{facility}/cycle/{cycle}/details",
+    response_model=FacilityCycleDetailsResponseModel,
+    include_in_schema=True,
+)
+async def get_cycle_details(facility: FacilityName, cycle: str):
+    """
+    Retrieve details for a specific cycle in a facility.
+
+    Args:
+        facility (FacilityName): The facility name (enum).
+        cycle (str): The cycle name.
+
+    Returns:
+        FacilityCycleDetailsResponseModel: Details about the requested cycle.
+        If the cycle is not found, returns a 404 JSON error response.
+    """
+    try:
+        cycle_obj = await facility_service.get_cycle_by_name(facility.value, cycle)
+    except CycleNotFoundError as e:
+        return fastapi.responses.JSONResponse(
+            {"error": str(e)},
+            status_code=404,
+        )
+    response_model = FacilityCycleDetailsResponseModel(
+        facility=facility.value,
+        cycle=cycle_obj.name,
+        start_date=cycle_obj.start_date,
+        end_date=cycle_obj.end_date,
+        active=cycle_obj.active,
+        accepting_proposals=cycle_obj.accepting_proposals,
+        is_current_operating_cycle=cycle_obj.is_current_operating_cycle,
+    )
+    return response_model

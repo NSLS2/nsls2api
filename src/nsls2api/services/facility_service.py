@@ -89,7 +89,10 @@ async def facility_cycles(facility: str) -> Optional[list[str]]:
     cycle_list = [c.name for c in cycles if c.name is not None]
     return cycle_list
 
-async def facility_cycle_by_date(facility: FacilityName, date: datetime.datetime) -> Optional[Cycle]:
+
+async def facility_cycle_by_date(
+    facility: FacilityName, date: datetime.datetime
+) -> Optional[Cycle]:
     """
     Find the cycle for a facility that contains the given date.
 
@@ -100,7 +103,7 @@ async def facility_cycle_by_date(facility: FacilityName, date: datetime.datetime
     cycle = await Cycle.find_one(
         Cycle.facility == facility.value,
         Cycle.start_date <= date,
-        Cycle.end_date >= date
+        Cycle.end_date >= date,
     )
     return cycle if cycle else None
 
@@ -363,3 +366,23 @@ async def is_healthy(facility: str) -> bool:
 async def cycle_exists(cycle_name: str, facility: str) -> bool:
     cycle = await Cycle.find_one(Cycle.name == cycle_name, Cycle.facility == facility)
     return False if cycle is None else True
+
+
+async def get_cycle_by_name(facility: str, cycle_name: str) -> Cycle:
+    """
+    Retrieve a cycle by its name for a given facility.
+
+    Args:
+        facility (str): The facility name or ID.
+        cycle_name (str): The cycle name.
+
+    Returns:
+        Cycle: The matching Cycle document.
+
+    Raises:
+        CycleNotFoundError: If no cycle is found for the given facility and cycle name.
+    """
+    cycle = await Cycle.find_one(Cycle.facility == facility, Cycle.name == cycle_name)
+    if cycle is None:
+        raise CycleNotFoundError(facility, cycle_name)
+    return cycle
