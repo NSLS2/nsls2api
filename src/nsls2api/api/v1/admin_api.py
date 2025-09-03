@@ -257,6 +257,8 @@ async def gather_locked_proposals(
     facility: str,
     beamline: Annotated[list[str], Query()] = [],
     cycle: Annotated[list[str], Query()] = [],
+    page_size: int = Query(10, ge=1, le=200),
+    page: int = Query(1, ge=1),
 ):
     for beamline_name in beamline:
         beamline_info = await beamline_service.beamline_by_name(beamline_name)
@@ -274,7 +276,7 @@ async def gather_locked_proposals(
                 detail=f"Cycle {cycle_name} not found",
             )
     locked_proposals = await proposal_service.get_locked_proposals(
-        cycles=cycle, beamlines=beamline
+        cycles=cycle, beamlines=beamline, page=page, page_size=page_size
     )
     locked_proposals_list = locked_proposals.locked_proposals
     if locked_proposals_list is None:

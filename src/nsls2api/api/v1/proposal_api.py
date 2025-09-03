@@ -103,8 +103,8 @@ async def get_proposals(
     beamline: Annotated[list[str], Query()] = [],
     cycle: Annotated[list[str], Query()] = [],
     facility: Annotated[list[FacilityName], Query()] = [FacilityName.nsls2],
-    page_size: int = 10,
-    page: int = 1,
+    page_size: int = Query(10, ge=1, le=200),
+    page: int = Query(1, ge=1),
     include_directories: bool = False,
 ):
     proposal_list = await proposal_service.fetch_proposals(

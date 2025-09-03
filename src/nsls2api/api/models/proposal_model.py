@@ -38,6 +38,8 @@ class CommissioningProposalsList(pydantic.BaseModel):
 class LockedProposalsList(pydantic.BaseModel):
     count: int
     locked_proposals: list[Proposal]
+    page_size: int | None = None
+    page: int | None = None
 
 
 class CycleProposalList(pydantic.BaseModel):
