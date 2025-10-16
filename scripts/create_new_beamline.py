@@ -8,7 +8,7 @@ from nsls2api.services import pass_service
 settings = get_settings()
 
 # CHANGE THIS TO THE BEAMLINE YOU WANT TO CREATE
-BEAMLINE_NAME = "CDI"
+BEAMLINE_NAME = "TLA"
 
 
 async def main():
@@ -26,16 +26,16 @@ async def main():
         long_name="Fancy New Beamline",
         alternative_name="99-ID",
         port="99-ID",
-        nsls2_redhat_satellite_location_name="Beamlines/99-ID ABC",
+        nsls2_redhat_satellite_location_name="Beamlines/99-ID TLA",
         pass_id=str(pass_ids[0]),
         pass_name="Beamline 99-ID",
         network_locations="xf99id1",
         github_org="NSLS2",
         service_accounts=ServiceAccounts(
-            ioc="softioc-abc",
-            epics_services="epics-abc",
-            workflow="workflow-abc",
-            bluesky="bluesky-abc",
+            ioc="softioc-tla",
+            epics_services="epics-tla",
+            workflow="workflow-tla",
+            bluesky="bluesky-tla",
             operator="xf99id",
         ),
     )
