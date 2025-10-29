@@ -29,9 +29,6 @@ settings = get_settings()
 logger.info(
     f"PASS Upstream API URL: {click.style(settings.pass_api_url, fg='magenta')}"
 )
-logger.info(
-    f"UPS Upstream  API URL: {click.style(settings.universal_proposal_system_api_url, fg='magenta')}"
-)
 
 current_file = Path(__file__)
 current_file_dir = current_file.parent
