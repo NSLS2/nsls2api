@@ -1,12 +1,13 @@
 from ldap3 import Server, Connection
 from datetime import datetime, timedelta
-
+import binascii
 
 def to_hex(val):
-    import binascii
+    
     if isinstance(val, bytes):
         return binascii.hexlify(val).decode()
     return None
+
 def get_user_info(upn, ldap_server, base_dn, bind_user, bind_password):
     conn = None 
     try:
@@ -14,44 +15,34 @@ def get_user_info(upn, ldap_server, base_dn, bind_user, bind_password):
         conn = Connection(server, user=bind_user, password=bind_password, auto_bind=True)
         search_filter = f"(&(objectclass=person)(userPrincipalName={upn}))"
         conn.search(base_dn, search_filter, attributes=['sAMAccountName'])
-        if conn.entries:
-            entry = conn.entries[0]
-        else:
+        if not conn.entries:
             print("No entries found for the given UPN.")
-            if conn is not None:
-                conn.unbind()
             return None
+        entry = conn.entries[0]
         username = entry.sAMAccountName.value if 'sAMAccountName' in entry else None
         print(f"Resolved username: {username}")
         if username is None:
-            if conn is not None:
-                conn.unbind()
             return None
         search_filter = f"(&(objectclass=posixaccount)(sAMAccountName={username}))"
         conn.search(base_dn, search_filter, attributes=['*'])
-        if conn.entries:
-            entry = conn.entries[0]
-            if conn is not None:
-                conn.unbind()
-            user = dict()
-            for attribute in entry.entry_attributes:
-                value = entry[attribute].value
-                if attribute in ("objectGUID", "objectSid"):
-                    user[attribute] = value  # keep as bytes
-                else:
-                    user[attribute] = str(value)
-                
-            return user
-        else:
+        if not conn.entries:
             print("no posix entries found for the given username.")
+            return None
+        entry = conn.entries[0]
+        user = dict()
+        for attribute in entry.entry_attributes:
+            value = entry[attribute].value
+            if attribute in ("objectGUID", "objectSid"):
+                user[attribute] = value  # keep as bytes
+            else:
+                user[attribute] = str(value)
+        return user
     except Exception as e:
         print(f"LDAP Error: {e}")
+        return None
+    finally:
         if conn is not None:
             conn.unbind()
-        return None
-    if conn is not None:
-        conn.unbind()
-    return None
 
 def filetime_to_str(filetime):
     try:
