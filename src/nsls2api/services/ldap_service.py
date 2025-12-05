@@ -1,6 +1,7 @@
 from ldap3 import Server, Connection
 from datetime import datetime, timedelta
 import binascii
+import nsls2api.infrastructure.loggging as logger
 
 def to_hex(val):
     
@@ -16,17 +17,16 @@ def get_user_info(upn, ldap_server, base_dn, bind_user, bind_password):
         search_filter = f"(&(objectclass=person)(userPrincipalName={upn}))"
         conn.search(base_dn, search_filter, attributes=['sAMAccountName'])
         if not conn.entries:
-            print("No entries found for the given UPN.")
+            logger.warning("No entries found for the given UPN.")
             return None
         entry = conn.entries[0]
         username = entry.sAMAccountName.value if 'sAMAccountName' in entry else None
-        print(f"Resolved username: {username}")
         if username is None:
             return None
         search_filter = f"(&(objectclass=posixaccount)(sAMAccountName={username}))"
         conn.search(base_dn, search_filter, attributes=['*'])
         if not conn.entries:
-            print("no posix entries found for the given username.")
+            logger.warning("no posix entries found for the given username.")
             return None
         entry = conn.entries[0]
         user = dict()
@@ -38,7 +38,7 @@ def get_user_info(upn, ldap_server, base_dn, bind_user, bind_password):
                 user[attribute] = str(value)
         return user
     except Exception as e:
-        print(f"LDAP Error: {e}")
+        logger.error(f"LDAP Error: {e}")
         return None
     finally:
         if conn is not None:
