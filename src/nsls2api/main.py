@@ -22,7 +22,6 @@ from nsls2api.infrastructure.config import get_settings
 from nsls2api.infrastructure.logging import logger
 from nsls2api.middleware import ProcessTimeMiddleware
 from nsls2api.views import diagnostics, home
-from nsls2api.api.v1 import whoami_api as whoami_api_v1
 
 settings = get_settings()
 
@@ -76,7 +75,6 @@ def configure_routing():
     app.include_router(user_api_v1.router, prefix="/v1", tags=["user"])
     app.include_router(admin_api_v1.router, prefix="/v1", tags=["admin"])
     app.include_router(jobs_api_v1.router, prefix="/v1", tags=["jobs"])
-    app.include_router(whoami_api_v1.router, prefix="/v1", tags=["whoami"])
 
     # Just log the current working directory - useful is some of the static files are not found.
     logger.info(f"Current working directory: {os.getcwd()}")
