@@ -114,7 +114,6 @@ async def lookup_api_key(token: str) -> ApiKey:
     # Manually fetch the linked user without using fetch_link to avoid aggregation issues
     # Get the user ID from the link reference
     if apikey.user and apikey.user.ref:
-        from nsls2api.models.apikeys import ApiUser
         user = await ApiUser.get(apikey.user.ref.id)
         apikey.user = user
 
