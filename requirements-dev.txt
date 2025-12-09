@@ -49,7 +49,11 @@ certifi==2025.11.12
     #   httpx
     #   requests
 cffi==2.0.0
+<<<<<<< Updated upstream
     # via gevent
+=======
+    # via cryptography
+>>>>>>> Stashed changes
 cfgv==3.5.0
     # via pre-commit
 charset-normalizer==3.4.4
@@ -77,6 +81,11 @@ configargparse==1.7.1
     #   locust-cloud
 coverage==7.13.0
     # via -r requirements-dev.in
+<<<<<<< Updated upstream
+=======
+cryptography==46.0.3
+    # via secretstorage
+>>>>>>> Stashed changes
 decorator==5.2.1
     # via ipython
 distlib==0.4.0
@@ -176,7 +185,11 @@ locust==2.42.6
     # via -r requirements-dev.in
 locust-cloud==1.29.5
     # via locust
+<<<<<<< Updated upstream
 markdown-it-py[linkify]==4.0.0
+=======
+markdown-it-py==4.0.0
+>>>>>>> Stashed changes
     # via
     #   mdit-py-plugins
     #   rich
@@ -225,7 +238,13 @@ pathspec==0.12.1
     #   black
     #   hatchling
 pexpect==4.9.0
+<<<<<<< Updated upstream
     # via hatch
+=======
+    # via
+    #   hatch
+    #   ipython
+>>>>>>> Stashed changes
 platformdirs==4.5.1
     # via
     #   black
@@ -288,16 +307,23 @@ python-engineio==4.12.3
     #   locust
     #   locust-cloud
     #   python-socketio
+<<<<<<< Updated upstream
 python-socketio[client]==5.15.0
+=======
+python-socketio==5.15.0
+>>>>>>> Stashed changes
     # via
     #   locust
     #   locust-cloud
 pytokens==0.3.0
     # via black
+<<<<<<< Updated upstream
 pywin32==311
     # via locust
 pywin32-ctypes==0.2.3
     # via keyring
+=======
+>>>>>>> Stashed changes
 pyyaml==6.0.3
     # via
     #   pre-commit
@@ -319,6 +345,13 @@ rich-toolkit==0.17.0
     # via fastapi-cli
 ruff==0.14.8
     # via -r requirements-dev.in
+<<<<<<< Updated upstream
+=======
+secretstorage==3.5.0
+    # via keyring
+setuptools==80.9.0
+    # via setuptools-scm
+>>>>>>> Stashed changes
 setuptools-scm==9.2.2
     # via hatch-vcs
 shellingham==1.5.4
@@ -357,8 +390,6 @@ typer==0.20.0
     # via fastapi-cli
 typing-extensions==4.15.0
     # via
-    #   aiosignal
-    #   anyio
     #   pydantic
     #   pydantic-core
     #   pyright
@@ -383,8 +414,15 @@ uv==0.9.16
     #   -r requirements-dev.in
     #   hatch
     #   pre-commit-uv
+<<<<<<< Updated upstream
 uvicorn[standard]==0.38.0
     # via fastapi-cli
+=======
+uvicorn==0.38.0
+    # via fastapi-cli
+uvloop==0.22.1
+    # via uvicorn
+>>>>>>> Stashed changes
 virtualenv==20.35.4
     # via
     #   hatch
@@ -411,6 +449,9 @@ zope-event==6.1
     # via gevent
 zope-interface==8.1.1
     # via gevent
+<<<<<<< Updated upstream
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
+=======
+>>>>>>> Stashed changes
