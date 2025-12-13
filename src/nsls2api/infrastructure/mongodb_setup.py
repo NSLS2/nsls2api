@@ -2,8 +2,8 @@ import asyncio
 
 import beanie
 import click
-import motor.motor_asyncio
 from pydantic import MongoDsn
+from pymongo import AsyncMongoClient
 
 from nsls2api import models
 from nsls2api.infrastructure.logging import logger
@@ -25,7 +25,7 @@ def create_connection_string(
 async def init_connection(mongodb_dsn: MongoDsn):
     logger.info(f"Attempting to connect to {click.style(str(mongodb_dsn), fg='green')}")
 
-    client = motor.motor_asyncio.AsyncIOMotorClient(
+    client = AsyncMongoClient(
         mongodb_dsn.unicode_string(), uuidRepresentation="standard"
     )
 
