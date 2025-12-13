@@ -97,8 +97,8 @@ async def db():
     # Clean up the database collections
     for model in models.all_models:
         print(f"dropping {model}")
-        await model.get_motor_collection().drop()
-        await model.get_motor_collection().drop_indexes()
+        await model.get_pymongo_collection().drop()
+        await model.get_pymongo_collection().drop_indexes()
 
 
 @pytest_asyncio.fixture(scope="session", loop_scope="session", autouse=True)
