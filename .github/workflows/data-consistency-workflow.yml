@@ -9,7 +9,7 @@ on:
 
 jobs:
   integration_tests:
-    if: ${{ github.repository == "nsls2/nsls2api" }}  # Do not run on forks
+    if: ${{ github.repository == 'nsls2/nsls2api' }}  # Do not run on forks
     runs-on: self-hosted
 
     steps:
