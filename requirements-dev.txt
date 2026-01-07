@@ -79,7 +79,7 @@ executing==2.2.1
     # via stack-data
 fastapi-cli==0.0.16
     # via -r requirements-dev.in
-filelock==3.20.0
+filelock==3.20.1
     # via virtualenv
 flask==3.1.2
     # via
@@ -172,7 +172,7 @@ locust==2.42.6
     # via -r requirements-dev.in
 locust-cloud==1.29.5
     # via locust
-markdown-it-py==4.0.0
+markdown-it-py[linkify]==4.0.0
     # via
     #   mdit-py-plugins
     #   rich
@@ -286,7 +286,7 @@ python-engineio==4.12.3
     #   locust
     #   locust-cloud
     #   python-socketio
-python-socketio==5.15.0
+python-socketio[client]==5.15.0
     # via
     #   locust
     #   locust-cloud
@@ -315,8 +315,6 @@ ruff==0.14.8
     # via -r requirements-dev.in
 secretstorage==3.5.0
     # via keyring
-setuptools==80.9.0
-    # via setuptools-scm
 setuptools-scm==9.2.2
     # via hatch-vcs
 shellingham==1.5.4
@@ -355,9 +353,12 @@ typer==0.20.0
     # via fastapi-cli
 typing-extensions==4.15.0
     # via
+    #   aiosignal
+    #   anyio
     #   pydantic
     #   pydantic-core
     #   pyright
+    #   pytest-asyncio
     #   rich-toolkit
     #   textual
     #   textual-dev
@@ -378,7 +379,7 @@ uv==0.9.16
     #   -r requirements-dev.in
     #   hatch
     #   pre-commit-uv
-uvicorn==0.38.0
+uvicorn[standard]==0.38.0
     # via fastapi-cli
 uvloop==0.22.1
     # via uvicorn
