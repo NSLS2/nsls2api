@@ -103,14 +103,21 @@ async def lookup_api_key(token: str) -> ApiKey:
     prefix_length = len(API_KEY_PREFIX)
 
     apikey: ApiKey = await ApiKey.find_one(
-        ApiKey.first_eight == token[prefix_length : prefix_length + 8],
-        fetch_links=True,
+        ApiKey.first_eight == token[prefix_length : prefix_length + 8]
     )
 
     if apikey is None:
         raise LookupError(
             f"Could not find an API key matching the one supplied: {token}"
         )
+
+    # Manually fetch the linked user without using fetch_link to avoid aggregation issues
+    # Get the user ID from the link reference
+    if apikey.user and apikey.user.ref:
+        if not hasattr(apikey.user.ref, "id"):
+            raise LookupError("API key user reference does not have an 'id' attribute.")
+        user = await ApiUser.get(apikey.user.ref.id)
+        apikey.user = user
 
     return apikey
 
