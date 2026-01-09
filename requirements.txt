@@ -57,7 +57,7 @@ httpx==0.28.1
     # via
     #   -r requirements.in
     #   httpx-socks
-httpx-socks==0.11.0
+httpx-socks[asyncio]==0.11.0
     # via -r requirements.in
 idna==3.11
     # via
@@ -76,7 +76,7 @@ ldap3==2.9.1
     # via n2snusertools
 linkify-it-py==2.0.3
     # via markdown-it-py
-markdown-it-py==4.0.0
+markdown-it-py[linkify]==4.0.0
     # via
     #   mdit-py-plugins
     #   rich
@@ -172,10 +172,12 @@ typer==0.20.0
     # via -r requirements.in
 typing-extensions==4.15.0
     # via
+    #   anyio
     #   beanie
     #   fastapi
     #   pydantic
     #   pydantic-core
+    #   starlette
     #   textual
     #   typer
     #   typing-inspection
@@ -195,5 +197,5 @@ uvicorn==0.38.0
     # via -r requirements.in
 wcwidth==0.2.14
     # via prettytable
-werkzeug==3.1.4
+werkzeug==3.1.5
     # via -r requirements.in
