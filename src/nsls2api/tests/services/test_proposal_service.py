@@ -1,14 +1,18 @@
 import pytest
+from httpx import ASGITransport, AsyncClient
+
+from nsls2api.main import app
 
 from nsls2api.models.proposals import Proposal
 from nsls2api.services import proposal_service
 
 test_proposal_id = "314159"
-
 test_beamline_name = "ZZZ"
-
 test_beamline_name_lower = "zzz"
+test_cycle_name = "1999-1"
 
+PAGE = 1
+PAGE_SIZE = 10
 
 @pytest.mark.anyio
 async def test_get_beamline_specific_slack_channel_for_proposal():
@@ -98,3 +102,85 @@ async def test_case_sensitivity_fetch_proposals():
 
     assert proposal_objects_upper == proposal_objects_lower
     assert proposal_objects_lower[0].proposal_id == test_proposal_id
+
+
+@pytest.mark.anyio
+async def test_data_sessions_endpoint(admin_api_key):
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test",
+        headers={"Authorization": admin_api_key['key']}  # Use the api_key fixture here
+    ) as ac:
+        resp = await ac.get(
+            "/v1/proposals/data-sessions",
+            params={
+                "beamline": test_beamline_name,
+                "cycle": test_cycle_name,
+            "facility": "nsls2",
+            "page": PAGE,
+            "page_size": PAGE_SIZE,
+        },
+    )
+    
+    assert resp.status_code == 200
+    body = resp.json()
+    print(resp.json())
+    assert "proposals" in body
+    assert "count" in body
+    assert "page_size" in body
+    assert "page" in body
+    assert body["count"] == len(body["proposals"])
+    assert body["page_size"] == PAGE_SIZE
+    assert body["page"] == PAGE
+    assert body["count"] >= 1
+    first = body["proposals"][0]
+    assert set(first.keys()) == {"proposal_id", "data_session"}
+    assert first["proposal_id"] == test_proposal_id
+    assert first["data_session"] == f"pass-{test_proposal_id}"
+
+@pytest.mark.anyio
+async def test_data_sessions_pagination(admin_api_key):
+    small_page_size = 2
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test",
+        headers={"Authorization": admin_api_key['key']}  # Use the api_key fixture here
+    ) as ac:
+        resp = await ac.get(
+            "/v1/proposals/data-sessions",
+            params={
+                "beamline": test_beamline_name,
+                "cycle": test_cycle_name,
+                "facility": "nsls2",
+                "page": 1,
+                "page_size": small_page_size,
+            },
+        )
+    assert resp.status_code == 200
+    body = resp.json()
+    print(resp.json())
+    assert body["page_size"] == small_page_size
+    assert body["page"] == 1
+    assert len(body["proposals"]) <= small_page_size
+    for p in body["proposals"]:
+        assert "proposal_id" in p
+        assert "data_session" in p
+
+@pytest.mark.anyio
+async def test_data_sessions_invalid_beamline(admin_api_key):
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test",
+        headers={"Authorization": admin_api_key['key']}  # Use the api_key fixture here
+    ) as ac:
+        resp = await ac.get(
+            "/v1/proposals/data-sessions",
+            params={
+                "beamline": "INVALID",
+                "cycle": test_cycle_name,
+                "facility": "nsls2",
+                "page": PAGE,
+                "page_size": PAGE_SIZE,
+            },
+        )
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["count"] == 0
+    assert body["proposals"] == []

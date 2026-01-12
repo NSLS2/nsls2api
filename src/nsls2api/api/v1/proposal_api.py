@@ -15,6 +15,7 @@ from nsls2api.api.models.proposal_model import (
     RecentProposalsList,
     SingleProposal,
     UsernamesList,
+    ProposalIdDataSessionList
 )
 from nsls2api.infrastructure.logging import logger
 from nsls2api.infrastructure.security import get_current_user, validate_admin_role
@@ -124,6 +125,39 @@ async def get_proposals(
         "count": len(proposal_list),
     }
 
+    return response_model
+
+
+
+@router.get(
+    "/proposals/data-sessions",
+    response_model=ProposalIdDataSessionList,
+    dependencies=[Depends(validate_admin_role)],
+    description="Return proposal_ids and their data_sessions for matching proposals.",
+)
+async def get_proposals_data_sessions(
+    proposal_id: Annotated[list[str], Query()] = [],
+    beamline: Annotated[list[str], Query()] = [],
+    cycle: Annotated[list[str], Query()] = [],
+    facility: Annotated[list[FacilityName], Query()] = [FacilityName.nsls2],
+    page_size: int = Query(10, ge=1, le=200),
+    page: int = Query(1, ge=1),
+):
+    proposals = await proposal_service.fetch_data_sessions(
+        proposal_id=proposal_id,
+        beamline=beamline,
+        cycle=cycle,
+        facility=facility,
+        page_size=page_size,
+        page=page
+    )
+
+    response_model = {
+        "proposals": proposals,
+        "page_size": page_size,
+        "page": page,
+        "count": len(proposals),
+    }
     return response_model
 
 

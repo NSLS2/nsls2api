@@ -16,6 +16,7 @@ from nsls2api.api.models.proposal_model import (
     ProposalDiagnostics,
     ProposalFullDetails,
     ProposalsToChangeList,
+    ProposalIdDataSession
 )
 from nsls2api.infrastructure.logging import logger
 from nsls2api.models.cycles import Cycle
@@ -390,6 +391,44 @@ async def fetch_proposals(
     else:
         return proposals
 
+async def fetch_data_sessions(
+    proposal_id: list[str] | None = None,
+    beamline: list[str] | None = None,
+    cycle: list[str] | None = None,
+    facility: list[str] | None = None,
+    page_size: int = 10,
+    page: int = 1,
+) -> list[ProposalIdDataSession]:
+    """
+    Fetch proposal_id and data_session for proposals matching filters.
+    Returns a list of ProposalIdDataSession objects.
+    """
+    query = []
+
+    if beamline:
+        beamline_upper = [beamline_name.upper() for beamline_name in beamline]
+        query.append(In(Proposal.instruments, beamline_upper))
+
+    if cycle:
+        query.append(In(Proposal.cycles, cycle))
+
+    if proposal_id:
+        query.append(In(Proposal.proposal_id, proposal_id))
+
+    filter_query = And(*query) if query else {}
+
+    proposals = (
+        await Proposal.find_many(
+            filter_query,
+            projection_model=ProposalIdDataSession
+        )
+        .sort(-Proposal.last_updated)
+        .limit(page_size)
+        .skip(page_size * (page - 1))
+        .to_list()
+    )
+
+    return proposals
 
 async def proposal_type_description_from_pass_type_id(
     pass_type_id: int,

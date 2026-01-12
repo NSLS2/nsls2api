@@ -22,7 +22,6 @@ class JobStatus(StrEnum):
 
 class JobSyncSource(StrEnum):
     PASS = "PASS"
-    universal_proposal_system = "universal_proposal_system"
 
 
 class JobActions(StrEnum):

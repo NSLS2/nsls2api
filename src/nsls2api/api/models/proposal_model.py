@@ -153,3 +153,14 @@ class ProposalChangeResultsList(pydantic.BaseModel):
 
 class ProposalsToChangeList(pydantic.BaseModel):
     proposals_to_change: list[str]
+
+
+class ProposalIdDataSession(pydantic.BaseModel):
+    proposal_id: str
+    data_session: str | None = None
+
+class ProposalIdDataSessionList(pydantic.BaseModel):
+    proposals: list[ProposalIdDataSession]
+    count: int
+    page_size: int
+    page: int

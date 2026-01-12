@@ -213,7 +213,6 @@ class Beamline(beanie.Document):
     data_admins: Optional[list[str]] = []
     custom_data_admin_group: Optional[str] = None
     github_org: Optional[str] = None
-    ups_id: Optional[str] = None
     data_root: Optional[str] = None
     services: Optional[list[BeamlineService]] = []
     detectors: Optional[list[Detector]] = []
