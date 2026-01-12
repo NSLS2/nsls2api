@@ -67,4 +67,5 @@ asyncio_mode = "auto"
 target-version = "py312"
 
 [tool.ruff.lint]
-extend-select = ["I"]
+# Catch jump control statements in finally (B012)
+extend-select = ["B012","I"]
