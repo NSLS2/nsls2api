@@ -72,9 +72,12 @@ async def get_beamline_detectors(name: str) -> DetectorList:
             status_code=fastapi.status.HTTP_404_NOT_FOUND, detail=e.args[0]
         )
     except Exception as e:
+        logger.exception(
+            "Unexpected error while fetching detectors for beamline %s", name
+        )
         raise HTTPException(
             status_code=fastapi.status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"An error occurred: {e}",
+            detail="Internal server error",
         )
 
 
