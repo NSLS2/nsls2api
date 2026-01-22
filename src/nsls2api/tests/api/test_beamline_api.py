@@ -81,7 +81,7 @@ async def test_get_nonexistent_beamline():
     ) as ac:
         response = await ac.get("/v1/beamline/does-not-exist")
     assert response.status_code == 404
-    assert response.json() == {"detail": "Beamline 'does-not-exist' does not exist"}
+    assert response.json() == {"detail": "Beamline 'DOES-NOT-EXIST' does not exist"}
 
 
 @pytest.mark.anyio
@@ -91,7 +91,7 @@ async def test_get_service_accounts_for_nonexistent_beamline():
     ) as ac:
         response = await ac.get("/v1/beamline/does-not-exist/service-accounts")
     assert response.status_code == 404
-    assert response.json() == {"detail": "Beamline 'does-not-exist' does not exist"}
+    assert response.json() == {"detail": "Beamline 'DOES-NOT-EXIST' does not exist"}
 
 
 @pytest.mark.anyio
