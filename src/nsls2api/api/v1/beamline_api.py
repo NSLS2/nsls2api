@@ -66,10 +66,10 @@ async def get_beamline_detectors(name: str) -> DetectorList:
     try:
         detectors = await beamline_service.detectors(name)
         response_model = DetectorList(detectors=detectors, count=len(detectors))
-        return response_model
     except LookupError as e:
         raise HTTPException(
-            status_code=fastapi.status.HTTP_404_NOT_FOUND, detail=e.args[0]
+            status_code=fastapi.status.HTTP_404_NOT_FOUND,
+            detail=f"Beamline '{name.upper()}' does not exist",
         )
     except Exception as e:
         logger.exception(
@@ -79,6 +79,7 @@ async def get_beamline_detectors(name: str) -> DetectorList:
             status_code=fastapi.status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error",
         )
+    return response_model
 
 
 @router.put(
