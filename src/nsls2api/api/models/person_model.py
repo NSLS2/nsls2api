@@ -1,5 +1,5 @@
 import datetime
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 
 import pydantic
 
@@ -95,3 +95,60 @@ class DataSessionAccess(pydantic.BaseModel):
     facility_all_access: List[str] = None
     beamline_all_access: List[str] = None
     data_sessions: List[str] = None
+
+
+class UnixInfo(pydantic.BaseModel):
+    uid: Optional[str] = None
+    uidNumber: Optional[str] = None
+    gidNumber: Optional[str] = None
+    homeDirectory: Optional[str] = None
+    loginShell: Optional[str] = None
+
+class IdentityInfo(pydantic.BaseModel):
+    displayName: Optional[str] = None
+    email: Optional[str] = None
+    department: Optional[str] = None
+    manager: Optional[str] = None
+    unix: Optional[UnixInfo] = None
+
+class AccountInfo(pydantic.BaseModel):
+    accountExpires: Optional[str] = None
+    badPasswordTime: Optional[str] = None
+    badPwdCount: int = 0
+    pwdLastSet: Optional[str] = None
+    lastLogon: Optional[str] = None
+    userAccountControlFlags: List[str] = []
+    userPrincipalName: Optional[str] = None
+    logonCount: int = 0
+    sAMAccountName: Optional[str] = None
+    sAMAccountType: Optional[str] = None
+    lastLogoff: Optional[int] = None
+    uSNCreated: int = 0
+
+class DirectoryInfo(pydantic.BaseModel):
+    objectGUID: Optional[str] = None
+    objectSid: Optional[str] = None
+    primaryGroupID: Optional[str] = None
+    distinguishedName: Optional[str] = None
+
+class AttributesInfo(pydantic.BaseModel):
+    sn: Optional[str] = None
+    givenName: Optional[str] = None
+    description: Optional[str] = None
+    gecos: Optional[str] = None
+    street: Optional[str] = None
+    codePage: Optional[str] = None
+    countryCode: Optional[str] = None
+    instanceType: Optional[str] = None
+    objectClass: List[str] = []
+
+class LDAPUserResponse(pydantic.BaseModel):
+    """Complete LDAP user data from direct LDAP query"""
+    dn: Optional[str] = None
+    status: str = "Read"
+    readTime: Optional[str] = None
+    identity: Optional[IdentityInfo] = None
+    account: Optional[AccountInfo] = None
+    directory: Optional[DirectoryInfo] = None
+    groups: List[str] = []
+    attributes: Optional[AttributesInfo] = None

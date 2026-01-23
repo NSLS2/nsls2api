@@ -2,6 +2,7 @@ from ldap3 import Server, Connection, ASYNC
 from datetime import datetime, timedelta
 import binascii
 from nsls2api.infrastructure.logging import logger
+from nsls2api.api.models.person_model import LDAPUserResponse
 
 def to_hex(val):
     
@@ -114,6 +115,11 @@ def shape_ldap_response(user_info, dn=None, status="Read", read_time=None):
             "lastLogon": filetime_to_str(user_info.get("lastLogon")),
             "userAccountControlFlags": decode_uac(user_info.get("userAccountControl")),
             "userPrincipalName": user_info.get("userPrincipalName"),
+            "logonCount": int(user_info.get("logonCount") or 0),
+            "sAMAccountName": user_info.get("sAMAccountName"),
+            "sAMAccountType": user_info.get("sAMAccountType"),
+            "lastLogoff": user_info.get("lastLogoff"),
+            "uSNCreated": int(user_info.get("uSNCreated") or 0),
         },
         "directory": {
             "objectGUID": to_hex(user_info.get("objectGUID")),
