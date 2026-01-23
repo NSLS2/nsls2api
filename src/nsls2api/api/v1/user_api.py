@@ -1,16 +1,15 @@
-from typing import Annotated
+import asyncio
 
 import fastapi
-from fastapi import Depends
+from fastapi import HTTPException, Request
 
-from nsls2api.api.models.person_model import DataSessionAccess, Person
-from nsls2api.infrastructure.security import (
-    get_current_user,
-)
+from nsls2api.api.models.person_model import DataSessionAccess, LDAPUserResponse, Person
+from nsls2api.infrastructure.security import get_settings
 from nsls2api.services import (
     bnlpeople_service,
     person_service,
 )
+from nsls2api.services.ldap_service import get_user_info, shape_ldap_response
 
 router = fastapi.APIRouter()
 
@@ -74,10 +73,26 @@ async def get_person_by_department(department_code: str = "PS"):
 
 
 # TODO: Add back into schema if we decide to use this endpoint.
-@router.get("/person/me", response_model=str, include_in_schema=False)
-async def get_myself(current_user: Annotated[Person, Depends(get_current_user)]):
-    return current_user
-
+@router.get("/person/me",include_in_schema=True)
+async def get_myself(request: Request, upn: str= None):
+    #User principal name
+    upn = upn or request.headers.get("upn")
+    if not upn:
+        raise HTTPException(status_code=400, detail = "upn not found")
+    settings = get_settings()
+    ldap_info = await asyncio.to_thread(get_user_info,
+        upn,
+        settings.ldap_server,
+        settings.base_dn,
+        settings.bind_user,
+        settings.ldap_bind_password
+    )
+    if not ldap_info:
+        raise HTTPException(status_code=404, detail="User not found in LDAP")
+    
+    shaped_info = shape_ldap_response(ldap_info)
+    return LDAPUserResponse(**shaped_info)
+    
 
 @router.get("/data-session/{username}", response_model=DataSessionAccess, tags=["data"])
 @router.get(

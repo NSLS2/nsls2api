@@ -2,7 +2,7 @@ import os
 from functools import lru_cache
 from pathlib import Path
 
-from pydantic import HttpUrl, MongoDsn
+from pydantic import Field, HttpUrl, MongoDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from nsls2api.infrastructure.logging import logger
@@ -70,6 +70,12 @@ class Settings(BaseSettings):
         env_file=str(Path(__file__).parent.parent / ".env"),
         extra="ignore",
     )
+
+    #Whoami LDAP settings
+    ldap_server: str = Field(default="ldaps://ldapproxy.nsls2.bnl.gov", alias="LDAP_SERVER")
+    base_dn: str = Field(default="dc=bnl,dc=gov", alias="BASE_DN")
+    bind_user: str = Field(default="", alias="BIND_USER")
+    ldap_bind_password: str = Field(default="", alias="LDAP_BIND_PASSWORD")
 
 
 @lru_cache()
