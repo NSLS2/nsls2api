@@ -111,7 +111,7 @@ prometheus-client==0.23.1
     # via prometheus-fastapi-instrumentator
 prometheus-fastapi-instrumentator==7.1.0
     # via -r requirements.in
-pyasn1==0.6.1
+pyasn1==0.6.2
     # via ldap3
 pycparser==2.23
     # via cffi
