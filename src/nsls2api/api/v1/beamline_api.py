@@ -28,7 +28,7 @@ async def details(name: str):
     if beamline is None:
         raise HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
-            detail=f"Beamline '{name}' does not exist",
+            detail=f"Beamline '{name.upper()}' does not exist",
         )
     return beamline
 
@@ -39,7 +39,7 @@ async def get_beamline_accounts(name: str, api_key: APIKey = Depends(get_current
     if service_accounts is None:
         raise HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
-            detail=f"Beamline '{name}' does not exist",
+            detail=f"Beamline '{name.upper()}' does not exist",
         )
     return service_accounts
 
@@ -54,7 +54,7 @@ async def get_beamline_slack_channel_managers(
     if slack_channel_managers is None:
         raise HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
-            detail=f"Beamline named {name} could not be found",
+            detail=f"Beamline '{name.upper()}' does not exist",
         )
     return slack_channel_managers
 
@@ -63,13 +63,13 @@ async def get_beamline_slack_channel_managers(
     "/beamline/{name}/detectors", response_model=DetectorList, include_in_schema=True
 )
 async def get_beamline_detectors(name: str) -> DetectorList:
-    detectors = await beamline_service.detectors(name)
-    if detectors is None:
+    try:
+        detectors = await beamline_service.detectors(name)
+    except LookupError:
         raise HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
-            detail=f"No detectors for the {name} beamline could not be found.",
+            detail=f"Beamline '{name.upper()}' does not exist",
         )
-
     response_model = DetectorList(detectors=detectors, count=len(detectors))
     return response_model
 
@@ -90,7 +90,7 @@ async def add_or_delete_detector(
     request: Request, name: str, detector_name: str, detector: Detector | None = None
 ):
     if request.method == "PUT":
-        logger.info(f"Adding detector {detector_name} to beamline {name}")
+        logger.info(f"Adding detector {detector_name} to beamline {name.upper()}")
 
         if not detector:
             raise HTTPException(
@@ -115,12 +115,12 @@ async def add_or_delete_detector(
         if new_detector is None:
             raise HTTPException(
                 status_code=fastapi.status.HTTP_409_CONFLICT,
-                detail=f"Detector already exists in beamline {name} with either name '{detector.name}' or directory name '{detector.directory_name}'",
+                detail=f"Detector already exists in beamline {name.upper()} with either name '{detector.name}' or directory name '{detector.directory_name}'",
             )
 
         changed_detector = new_detector
     elif request.method == "DELETE":
-        logger.info(f"Deleting detector {detector_name} from beamline {name}")
+        logger.info(f"Deleting detector {detector_name} from beamline {name.upper()}")
 
         deleted_detector = await beamline_service.delete_detector(
             beamline_name=name,
@@ -130,7 +130,7 @@ async def add_or_delete_detector(
         if deleted_detector is None:
             raise HTTPException(
                 status_code=fastapi.status.HTTP_404_NOT_FOUND,
-                detail=f"Detector {detector_name} was not found for beamline {name}",
+                detail=f"Detector {detector_name} was not found for beamline {name.upper()}",
             )
 
         changed_detector = deleted_detector
@@ -152,7 +152,7 @@ async def get_beamline_directory_skeleton(name: str):
     if directory_skeleton is None:
         raise HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
-            detail=f"No proposal directory skeleton for the {name} beamline could be generated.",
+            detail=f"No proposal directory skeleton for the {name.upper()} beamline could be generated.",
         )
     response_model = ProposalDirectoriesList(
         directory_count=len(directory_skeleton), directories=directory_skeleton
@@ -172,7 +172,7 @@ async def get_beamline_workflow_username(name: str):
     if workflow_user is None:
         raise HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
-            detail=f"No workflow user has been defined for the {name} beamline",
+            detail=f"No workflow user has been defined for the {name.upper()} beamline",
         )
     return workflow_user
 
@@ -185,7 +185,7 @@ async def get_beamline_ioc_username(name: str):
     if ioc_user is None:
         raise HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
-            detail=f"No IOC user has been defined for the {name} beamline",
+            detail=f"No IOC user has been defined for the {name.upper()} beamline",
         )
     return ioc_user
 
@@ -198,7 +198,7 @@ async def get_beamline_bluesky_username(name: str):
     if bluesky_user is None:
         raise HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
-            detail=f"No bluesky user has been defined for the {name} beamline",
+            detail=f"No bluesky user has been defined for the {name.upper()} beamline",
         )
     return bluesky_user
 
@@ -213,7 +213,7 @@ async def get_beamline_epics_services_username(name: str):
     if epics_user is None:
         raise HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
-            detail=f"No EPICS services user has been defined for the {name} beamline",
+            detail=f"No EPICS services user has been defined for the {name.upper()} beamline",
         )
     return epics_user
 
@@ -226,7 +226,7 @@ async def get_beamline_operator_username(name: str):
     if operator_user is None:
         raise HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
-            detail=f"No operator user has been defined for the {name} beamline",
+            detail=f"No operator user has been defined for the {name.upper()} beamline",
         )
     return operator_user
 
@@ -241,7 +241,7 @@ async def get_beamline_services(name: str):
     if beamline_services is None:
         raise HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
-            detail=f"Beamline named {name} could not be found",
+            detail=f"Beamline named {name.upper()} could not be found",
         )
     return beamline_services
 
@@ -253,7 +253,7 @@ async def get_beamline_services(name: str):
     dependencies=[Depends(validate_admin_role)],
 )
 async def add_beamline_service(name: str, service: BeamlineService):
-    logger.info(f"Adding service {service.name} to beamline {name}")
+    logger.info(f"Adding service {service.name} to beamline {name.upper()}")
 
     new_service = await beamline_service.add_service(
         beamline_name=name,
@@ -267,7 +267,7 @@ async def add_beamline_service(name: str, service: BeamlineService):
     if new_service is None:
         raise HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
-            detail=f"Service {service.name} already exists in beamline {name}",
+            detail=f"Service {service.name} already exists in beamline {name.upper()}",
         )
 
     return new_service

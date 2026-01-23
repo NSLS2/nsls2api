@@ -76,14 +76,10 @@ async def all_services(name: str) -> Optional[ServicesOnly]:
     return beamline_services.services
 
 
-async def detectors(name: str) -> Optional[list[Detector]]:
-    beamline_detectors = await Beamline.find_one(Beamline.name == name.upper()).project(
-        DetectorView
-    )
-
+async def detectors(name: str) -> list[Detector]:
+    beamline_detectors = await Beamline.find_one(Beamline.name == name.upper()).project(DetectorView)
     if beamline_detectors is None:
-        return None
-
+        raise LookupError(f"Beamline '{name.upper()}' does not exist.")
     return beamline_detectors.detectors
 
 

@@ -2,7 +2,7 @@ import pytest
 from httpx import ASGITransport, AsyncClient
 
 from nsls2api.main import app
-from nsls2api.models.beamlines import Beamline, DirectoryList, ServiceAccounts
+from nsls2api.models.beamlines import Beamline, DetectorList, DirectoryList, ServiceAccounts
 
 
 @pytest.mark.anyio
@@ -81,7 +81,7 @@ async def test_get_nonexistent_beamline():
     ) as ac:
         response = await ac.get("/v1/beamline/does-not-exist")
     assert response.status_code == 404
-    assert response.json() == {"detail": "Beamline 'does-not-exist' does not exist"}
+    assert response.json() == {"detail": "Beamline 'DOES-NOT-EXIST' does not exist"}
 
 
 @pytest.mark.anyio
@@ -91,7 +91,7 @@ async def test_get_service_accounts_for_nonexistent_beamline():
     ) as ac:
         response = await ac.get("/v1/beamline/does-not-exist/service-accounts")
     assert response.status_code == 404
-    assert response.json() == {"detail": "Beamline 'does-not-exist' does not exist"}
+    assert response.json() == {"detail": "Beamline 'DOES-NOT-EXIST' does not exist"}
 
 
 @pytest.mark.anyio
@@ -101,3 +101,36 @@ async def test_get_directory_skeleton_for_nonexistent_beamline():
     ) as ac:
         response = await ac.get("/v1/beamline/does-not-exist/directory-skeleton")
     assert response.status_code == 404
+
+
+@pytest.mark.anyio
+async def test_get_beamline_detectors_with_empty_list():
+    """Test that detectors endpoint returns empty array when no detectors exist."""
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as ac:
+        response = await ac.get("/v1/beamline/zzz/detectors")
+    
+    assert response.status_code == 200
+    response_json = response.json()
+    
+    # Verify the response structure
+    detector_list = DetectorList(**response_json)
+    assert detector_list.detectors == []
+    assert detector_list.count == 0
+
+
+@pytest.mark.anyio
+async def test_get_beamline_detectors_for_nonexistent_beamline():
+    """Test that 404 error is returned when requesting detectors for non-existent beamline."""
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as ac:
+        response = await ac.get("/v1/beamline/does-not-exist/detectors")
+    
+    assert response.status_code == 404
+    response_json = response.json()
+    assert "detail" in response_json
+    assert "does not exist" in response_json["detail"].lower()
+
+
