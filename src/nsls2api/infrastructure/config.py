@@ -2,7 +2,7 @@ import os
 from functools import lru_cache
 from pathlib import Path
 
-from pydantic import HttpUrl, MongoDsn, Field
+from pydantic import Field, HttpUrl, MongoDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from nsls2api.infrastructure.logging import logger

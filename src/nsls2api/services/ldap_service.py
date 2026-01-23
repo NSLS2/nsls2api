@@ -1,8 +1,10 @@
-from ldap3 import Server, Connection, ASYNC
-from datetime import datetime, timedelta
 import binascii
+from datetime import datetime, timedelta
+
+from ldap3 import Connection, Server
+
 from nsls2api.infrastructure.logging import logger
-from nsls2api.api.models.person_model import LDAPUserResponse
+
 
 def to_hex(val):
     

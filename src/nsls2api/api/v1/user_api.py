@@ -1,14 +1,10 @@
-from typing import Annotated
 import asyncio
-import fastapi
-from fastapi import Depends, Request, HTTPException
 
-from nsls2api.api.models.person_model import DataSessionAccess, Person, LDAPUserResponse
-from nsls2api.infrastructure.security import (
-    get_current_user,
-    get_settings
-)
-from nsls2api.services.n2sn_service import get_groups_by_username, get_user_by_username
+import fastapi
+from fastapi import HTTPException, Request
+
+from nsls2api.api.models.person_model import DataSessionAccess, LDAPUserResponse, Person
+from nsls2api.infrastructure.security import get_settings
 from nsls2api.services import (
     bnlpeople_service,
     person_service,
