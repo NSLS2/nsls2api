@@ -83,8 +83,8 @@ async def get_myself(request: Request, upn: str= None):
     ldap_info = await asyncio.to_thread(get_user_info,
         upn,
         settings.ldap_server,
-        settings.base_dn,
-        settings.bind_user,
+        settings.ldap_base_dn,
+        settings.ldap_bind_user,
         settings.ldap_bind_password
     )
     if not ldap_info:
