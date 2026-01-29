@@ -117,19 +117,22 @@ class AccountInfo(pydantic.BaseModel):
     badPwdCount: int = 0
     pwdLastSet: Optional[str] = None
     lastLogon: Optional[str] = None
-    userAccountControlFlags: List[str] = []
+    userAccountControlFlags: List[str] = pydantic.Field(default_factory=list)
     userPrincipalName: Optional[str] = None
     logonCount: int = 0
     sAMAccountName: Optional[str] = None
     sAMAccountType: Optional[str] = None
-    lastLogoff: Optional[int] = None
-    uSNCreated: int = 0
+    lastLogoff: Optional[str] = None
+    uSNCreated: Optional[int] = None
+    uSNChanged: Optional[int] = None
 
 class DirectoryInfo(pydantic.BaseModel):
     objectGUID: Optional[str] = None
     objectSid: Optional[str] = None
     primaryGroupID: Optional[str] = None
     distinguishedName: Optional[str] = None
+    whenCreated: Optional[str] = None
+    whenChanged: Optional[str] = None
 
 class AttributesInfo(pydantic.BaseModel):
     sn: Optional[str] = None
@@ -140,7 +143,7 @@ class AttributesInfo(pydantic.BaseModel):
     codePage: Optional[str] = None
     countryCode: Optional[str] = None
     instanceType: Optional[str] = None
-    objectClass: List[str] = []
+    objectClass: List[str] = pydantic.Field(default_factory=list)
 
 class LDAPUserResponse(pydantic.BaseModel):
     """Complete LDAP user data from direct LDAP query"""
@@ -150,5 +153,5 @@ class LDAPUserResponse(pydantic.BaseModel):
     identity: Optional[IdentityInfo] = None
     account: Optional[AccountInfo] = None
     directory: Optional[DirectoryInfo] = None
-    groups: List[str] = []
+    groups: List[str] = pydantic.Field(default_factory=list)
     attributes: Optional[AttributesInfo] = None

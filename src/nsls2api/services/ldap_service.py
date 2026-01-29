@@ -12,13 +12,13 @@ def to_hex(val):
         return binascii.hexlify(val).decode()
     return None
 
-def get_user_info(upn, ldap_server, base_dn, bind_user, bind_password):
+def get_user_info(upn, ldap_server, ldap_base_dn, ldap_bind_user, bind_password):
     conn = None 
     try:
         server = Server(ldap_server)
-        conn = Connection(server, user=bind_user, password=bind_password, auto_bind=True)
+        conn = Connection(server, user=ldap_bind_user, password=bind_password, auto_bind=True)
         search_filter = f"(&(objectclass=person)(userPrincipalName={upn}))"
-        conn.search(base_dn, search_filter, attributes=['sAMAccountName'])
+        conn.search(ldap_base_dn, search_filter, attributes=['sAMAccountName'])
 
         if not conn.entries:
             logger.warning("No entries found for the given UPN.")
@@ -30,7 +30,7 @@ def get_user_info(upn, ldap_server, base_dn, bind_user, bind_password):
             return None
 
         search_filter = f"(&(objectclass=posixaccount)(sAMAccountName={username}))"
-        conn.search(base_dn, search_filter, attributes=['*'])
+        conn.search(ldap_base_dn, search_filter, attributes=['*'])
 
         if not conn.entries:
             logger.warning("no posix entries found for the given username.")
@@ -120,14 +120,17 @@ def shape_ldap_response(user_info, dn=None, status="Read", read_time=None):
             "logonCount": int(user_info.get("logonCount") or 0),
             "sAMAccountName": user_info.get("sAMAccountName"),
             "sAMAccountType": user_info.get("sAMAccountType"),
-            "lastLogoff": user_info.get("lastLogoff"),
+            "lastLogoff": filetime_to_str(user_info.get("lastLogoff")),
             "uSNCreated": int(user_info.get("uSNCreated") or 0),
+            "uSNChanged": int(user_info.get("uSNChanged") or 0),
         },
         "directory": {
             "objectGUID": to_hex(user_info.get("objectGUID")),
             "objectSid": to_hex(user_info.get("objectSid")),
             "primaryGroupID": user_info.get("primaryGroupID"),
             "distinguishedName": user_info.get("distinguishedName"),
+            "whenCreated": generalized_time_to_str(user_info.get("whenCreated")),
+            "whenChanged": generalized_time_to_str(user_info.get("whenChanged")),
         },
         "groups": clean_groups(user_info.get("memberOf")),
         "attributes": {
