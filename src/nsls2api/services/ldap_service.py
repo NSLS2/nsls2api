@@ -120,14 +120,17 @@ def shape_ldap_response(user_info, dn=None, status="Read", read_time=None):
             "logonCount": int(user_info.get("logonCount") or 0),
             "sAMAccountName": user_info.get("sAMAccountName"),
             "sAMAccountType": user_info.get("sAMAccountType"),
-            "lastLogoff": int(user_info.get("lastLogoff") or 0),
+            "lastLogoff": filetime_to_str(user_info.get("lastLogoff")),
             "uSNCreated": int(user_info.get("uSNCreated") or 0),
+            "uSNChanged": int(user_info.get("uSNChanged") or 0),
         },
         "directory": {
             "objectGUID": to_hex(user_info.get("objectGUID")),
             "objectSid": to_hex(user_info.get("objectSid")),
             "primaryGroupID": user_info.get("primaryGroupID"),
             "distinguishedName": user_info.get("distinguishedName"),
+            "whenCreated": generalized_time_to_str(user_info.get("whenCreated")),
+            "whenChanged": generalized_time_to_str(user_info.get("whenChanged")),
         },
         "groups": clean_groups(user_info.get("memberOf")),
         "attributes": {
