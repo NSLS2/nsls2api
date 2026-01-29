@@ -17,6 +17,10 @@ async def main():
 
     pass_resources = await pass_service.get_pass_resources()
     pass_ids = [r["ID"] for r in pass_resources if r["Code"] == BEAMLINE_NAME]
+
+    if not pass_ids:
+        raise KeyError(f"No pass ID was found for {BEAMLINE_NAME}")
+
     if len(pass_ids) > 1:
         raise ValueError(f"Multiple pass IDs found for {BEAMLINE_NAME}: {pass_ids}")
 
