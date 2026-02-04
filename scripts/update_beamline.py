@@ -1,4 +1,5 @@
 import asyncio
+import datetime
 
 from nsls2api.infrastructure import mongodb_setup
 from nsls2api.infrastructure.config import get_settings
@@ -7,7 +8,7 @@ from nsls2api.services import pass_service
 
 settings = get_settings()
 
-# CHANGE THIS TO THE BEAMLINE YOU WANT TO CREATE
+# CHANGE THIS TO THE BEAMLINE YOU WANT TO UPDATE
 BEAMLINE_NAME = "CDI"
 
 
@@ -28,7 +29,7 @@ async def main():
     if not beamline:
         raise KeyError(f"No beamline found with pass_id {pass_ids[0]}")
 
-    # Change only the values that need to be changed.
+    # CHANGE THESE VALUES TO SUIT YOUR NEEDS.
     beamline.service_accounts = ServiceAccounts(
         ioc="softioc-cdi",
         epics_services="epics-services-cdi",
@@ -38,8 +39,13 @@ async def main():
         lsdc=None
     )
 
-    await beamline.save()  
-    print("Updated service_accounts for beamline:", beamline.name)
+    print("Will update service_accounts for beamline:", beamline.name)
+    print(beamline)
+
+    beamline.last_updated = datetime.datetime.now()
+
+    # Uncomment this line to actually save the changes to the database
+    await beamline.save()
 
 if __name__ == "__main__":
     asyncio.run(main())
