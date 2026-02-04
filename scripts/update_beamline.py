@@ -46,7 +46,7 @@ async def main():
     beamline.last_updated = datetime.datetime.now()
     print(datetime.datetime.now())
 
-    # Uncomment this line to actually save the changes to the database
+    # Uncomment the line below to actually save the changes to the database
     # await beamline.save()
 
     print("Updated beamline")
