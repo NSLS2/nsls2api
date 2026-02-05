@@ -9,7 +9,7 @@ from nsls2api.services import pass_service
 settings = get_settings()
 
 # CHANGE THIS TO THE BEAMLINE YOU WANT TO UPDATE
-BEAMLINE_NAME = "TLA"
+BEAMLINE_NAME = "TLA"  # Example: "HXN", "CDI", "AMX", etc.
 
 
 async def main():
@@ -29,28 +29,32 @@ async def main():
     if not beamline:
         raise KeyError(f"No beamline found with pass_id {pass_ids[0]}") 
 
+    print("Current beamline:")
     print(beamline)
 
-    # CHANGE THESE VALUES TO SUIT YOUR NEEDS.
+    # This is an example of updating the service accounts for the beamline.
+    # Change these values to suit your needs.
     beamline.service_accounts = ServiceAccounts(
-        ioc="softioc-tla",
+        ioc="softioc-tla-1",
         epics_services="epics-services-tla",
         workflow="workflow-tla",
         bluesky="bluesky-tla",
-        operator="xf09id1",
+        operator="xf99id",
         lsdc=None
     )
 
-    print("Will update service_accounts for beamline:", beamline.name)
+    # INCLUDE ADDITIONAL CHANGES TO THE BEAMLINE OBJECT HERE AS NEEDED
+    # Example: beamline.long_name = "Repurposed Beamline"
+    #      or: beamline.port = "99-BM"
+    # etc. or: beamline.network_locations = "xf99bm1"
 
     beamline.last_updated = datetime.datetime.now()
-    print(datetime.datetime.now())
+
+    print("New values to be updated for the beamline:", beamline.name)
+    print(beamline)
 
     # Uncomment the line below to actually save the changes to the database
     # await beamline.save()
-
-    print("Updated beamline")
-    print(beamline)
 
 if __name__ == "__main__":
     asyncio.run(main())
