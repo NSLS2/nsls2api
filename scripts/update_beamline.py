@@ -35,7 +35,7 @@ async def main():
     # This is an example of updating the service accounts for the beamline.
     # Change these values to suit your needs.
     beamline.service_accounts = ServiceAccounts(
-        ioc="softioc-tla-1",
+        ioc="softioc-tla",
         epics_services="epics-services-tla",
         workflow="workflow-tla",
         bluesky="bluesky-tla",
