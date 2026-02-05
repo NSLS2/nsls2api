@@ -46,7 +46,7 @@ async def main():
     # INCLUDE ADDITIONAL CHANGES TO THE BEAMLINE OBJECT HERE AS NEEDED
     # Example: beamline.long_name = "Repurposed Beamline"
     #      or: beamline.port = "99-BM"
-    # etc. or: beamline.network_locations = "xf99bm1"
+    #      or: beamline.network_locations = "xf99bm1"
 
     beamline.last_updated = datetime.datetime.now()
 
