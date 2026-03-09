@@ -18,6 +18,11 @@ OPERATIONAL_ATTRIBUTES = [
     'memberOf',
     'whenCreated',
     'whenChanged',
+    'logonCount',
+    'lastLogon',
+    'lastLogoff',
+    'street',
+    'badPasswordTime',
 ]
 
 def get_user_info(upn, ldap_server, ldap_base_dn, ldap_bind_user, bind_password):
@@ -26,40 +31,63 @@ def get_user_info(upn, ldap_server, ldap_base_dn, ldap_bind_user, bind_password)
         server = Server(ldap_server)
         conn = Connection(server, user=ldap_bind_user, password=bind_password, auto_bind=True)
         
+        
         search_filter = f"(&(objectclass=person)(userPrincipalName={upn}))"
+        # Search 1: Get sAMAccountName for the given UPN
         conn.search(ldap_base_dn, search_filter, attributes=['sAMAccountName'])
 
         if not conn.entries:
-            logger.warning("No entries found for the given UPN.")
+            logger.warning(f"No entries found for the given UPN: {upn}")
             return None
 
         entry = conn.entries[0]
         username = entry.sAMAccountName.value if 'sAMAccountName' in entry else None
         if username is None:
-            logger.warning("sAMAccountName not found.")
+            logger.warning(f"sAMAccountName not found for upn: {upn}")
             return None
 
-        search_filter = f"(&(objectclass=posixaccount)(sAMAccountName={username}))"
+        posix_filter = f"(&(objectclass=posixaccount)(sAMAccountName={username}))"
+        user={}
         
-        # Search 1: Get regular attributes
-        conn.search(ldap_base_dn, search_filter, attributes=['*'])
+        # Search 2: Get regular attributes
+        conn.search(ldap_base_dn, posix_filter, attributes=['*'])
         if not conn.entries:
+            logger.warning(f"No posix entries found for username: {username}, will still search operational attributes")
+            return None
+        else:
+            entry = conn.entries[0]  
+            user = _extract_attributes(entry)
+
+        missing_ops = [attr for attr in OPERATIONAL_ATTRIBUTES if not user.get(attr)]
+
+        if  missing_ops:
+            # Search 3: Only performed if operational attributes are missing
+            logger.warning(f"Operational attributes missing after second search for {username}: {missing_ops}, performing explicit search")
+            conn.search(ldap_base_dn, posix_filter, attributes=missing_ops)
+            if not conn.entries:
+                logger.warning(f"No operational attributes found for username: {username}")
+            else:
+                entry = conn.entries[0]
+                operational = _extract_attributes(entry)
+
+                for attr, value in operational.items():
+                    if attr not in user or user[attr] is None:
+                        user[attr] = value
+
+                # Log if still missing after explicit search
+                still_missing = [attr for attr in OPERATIONAL_ATTRIBUTES if not user.get(attr)]
+                if still_missing:
+                    logger.warning(f"Operational attributes still missing after explicit search for {username}: {still_missing}")
+
+        if not user:
+            logger.error(f"No data found for UPN: {upn}")
             return None
 
-        entry = conn.entries[0]
-        user = _extract_attributes(entry)
-
-        # Search 2: Get operational attributes and merge
-        conn.search(ldap_base_dn, search_filter, attributes=OPERATIONAL_ATTRIBUTES)
-        if conn.entries:
-            entry = conn.entries[0]
-            operational = _extract_attributes(entry)
-            user.update(operational)
-
+        
         return user
 
     except Exception as e:
-        logger.error(f"LDAP Error: {e}", exc_info=True)
+        logger.error(f"LDAP Error for UPN {upn}: {e}", exc_info=True)
         return None
     finally:
         if conn is not None:
