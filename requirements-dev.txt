@@ -30,7 +30,7 @@ backports-zstd==1.2.0
     # via hatch
 bidict==0.23.1
     # via python-socketio
-black==25.12.0
+black==26.3.1
     # via -r requirements-dev.in
 blinker==1.9.0
     # via flask
@@ -216,7 +216,7 @@ packaging==25.0
     #   setuptools-scm
 parso==0.8.5
     # via jedi
-pathspec==0.12.1
+pathspec==1.0.4
     # via
     #   black
     #   hatchling
@@ -290,7 +290,7 @@ python-socketio[client]==5.15.0
     # via
     #   locust
     #   locust-cloud
-pytokens==0.3.0
+pytokens==0.4.1
     # via black
 pyyaml==6.0.3
     # via
