@@ -2,7 +2,7 @@
 #    uv pip compile requirements-dev.in -o requirements-dev.txt
 aiohappyeyeballs==2.6.1
     # via aiohttp
-aiohttp==3.13.3
+aiohttp==3.13.4
     # via
     #   aiohttp-jinja2
     #   textual-dev
