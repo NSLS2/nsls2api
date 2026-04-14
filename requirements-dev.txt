@@ -272,7 +272,7 @@ pyproject-hooks==1.2.0
     # via hatch
 pyright==1.1.407
     # via -r requirements-dev.in
-pytest==9.0.2
+pytest==9.0.3
     # via
     #   -r requirements-dev.in
     #   locust
