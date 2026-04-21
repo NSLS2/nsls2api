@@ -134,7 +134,7 @@ pymongo==4.15.5
     # via
     #   -r requirements.in
     #   beanie
-python-dotenv==1.2.1
+python-dotenv==1.2.2
     # via pydantic-settings
 python-multipart==0.0.20
     # via -r requirements.in
