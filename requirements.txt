@@ -31,8 +31,6 @@ click==8.3.3
     #   beanie
     #   typer
     #   uvicorn
-colorama==0.4.6
-    # via click
 decorator==5.2.1
     # via gssapi
 dnspython==2.8.0
@@ -176,10 +174,12 @@ typer==0.25.1
     # via -r requirements.in
 typing-extensions==4.15.0
     # via
+    #   anyio
     #   beanie
     #   fastapi
     #   pydantic
     #   pydantic-core
+    #   starlette
     #   textual
     #   typing-inspection
 typing-inspection==0.4.2
@@ -187,8 +187,6 @@ typing-inspection==0.4.2
     #   fastapi
     #   pydantic
     #   pydantic-settings
-tzdata==2026.2
-    # via faker
 uc-micro-py==2.0.0
     # via linkify-it-py
 uuid==1.30
