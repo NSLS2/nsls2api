@@ -17,7 +17,7 @@ from nsls2api.models.proposals import Proposal
 @pytest_asyncio.fixture(scope="function", autouse=True)
 async def db():
     settings = get_settings()
-    await init_connection(settings.mongodb_dsn)
+    client = await init_connection(settings.mongodb_dsn)
 
     # Insert a beamline into the database
     beamline = Beamline(
@@ -100,14 +100,17 @@ async def db():
         await model.get_pymongo_collection().drop()
         await model.get_pymongo_collection().drop_indexes()
 
+    # Close the MongoDB client to prevent event loop issues
+    await client.close()
 
-@pytest_asyncio.fixture(scope="function", autouse=True)
+
+@pytest_asyncio.fixture(scope="function")
 async def api_key(db):
     """Generate and return an API key for test authentication."""
     return await generate_api_key(username="test_user", usertype=ApiUserType.user)
 
 
-@pytest_asyncio.fixture(scope="function", autouse=True)
+@pytest_asyncio.fixture(scope="function")
 async def admin_api_key(db):
     """Generate and return an admin API key for test authentication."""
     # Create API key for the admin test user

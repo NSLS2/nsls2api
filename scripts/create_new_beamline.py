@@ -13,7 +13,7 @@ BEAMLINE_NAME = "TLA"
 
 async def main():
     # Initialize Beanie
-    await mongodb_setup.init_connection(settings.mongodb_dsn)
+    _ = await mongodb_setup.init_connection(settings.mongodb_dsn)
 
     pass_resources = await pass_service.get_pass_resources()
     pass_ids = [r["ID"] for r in pass_resources if r["Code"] == BEAMLINE_NAME]

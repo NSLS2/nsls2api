@@ -37,3 +37,5 @@ async def init_connection(mongodb_dsn: MongoDsn):
     logger.info(
         f"Connected to {click.style(client.get_default_database().name, fg='green')} database."
     )
+
+    return client

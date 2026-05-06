@@ -14,7 +14,7 @@ BEAMLINE_NAME = "TLA"  # Example: "HXN", "CDI", "AMX", etc.
 
 async def main():
     # Initialize Beanie
-    await mongodb_setup.init_connection(settings.mongodb_dsn)
+    _ = await mongodb_setup.init_connection(settings.mongodb_dsn)
 
     pass_resources = await pass_service.get_pass_resources()
     pass_ids = [r["ID"] for r in pass_resources if r["Code"] == BEAMLINE_NAME]
@@ -27,7 +27,7 @@ async def main():
 
     beamline = await Beamline.find_one(Beamline.pass_id == str(pass_ids[0]))
     if not beamline:
-        raise KeyError(f"No beamline found with pass_id {pass_ids[0]}") 
+        raise KeyError(f"No beamline found with pass_id {pass_ids[0]}")
 
     print("Current beamline:")
     print(beamline)
@@ -40,7 +40,7 @@ async def main():
         workflow="workflow-tla",
         bluesky="bluesky-tla",
         operator="xf99id",
-        lsdc=None
+        lsdc=None,
     )
 
     # INCLUDE ADDITIONAL CHANGES TO THE BEAMLINE OBJECT HERE AS NEEDED
@@ -55,6 +55,7 @@ async def main():
 
     # Uncomment the line below to actually save the changes to the database
     # await beamline.save()
+
 
 if __name__ == "__main__":
     asyncio.run(main())
