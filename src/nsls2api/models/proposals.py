@@ -49,7 +49,8 @@ class ProposalBase(pydantic.BaseModel):
 # -- Pydantic Model for Display/Transport --
 class ProposalDisplay(ProposalBase):
     # Prevent unwanted fields (like MongoDB _id) from breaking deserialization
-    model_config = ConfigDict(extra="ignore")
+    class Config:
+        extra = "ignore"
 
 
 # -- Beanie Model for Database --

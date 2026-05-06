@@ -42,6 +42,7 @@ class ApiUser(beanie.Document):
         default_factory=datetime.datetime.now
     )
     user_api_keys: BackLink["ApiKey"] = Field(original_field="user")
+    # user_api_keys: Optional[List[BackLink["ApiKey"]]]= Field(original_field="user")
 
     class Settings:
         name = "api_users"
