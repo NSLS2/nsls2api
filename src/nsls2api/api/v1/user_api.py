@@ -1,6 +1,6 @@
+import fastapi
 from typing import Annotated
 
-import fastapi
 from fastapi import Depends,Header, HTTPException
 
 from nsls2api.api.models.person_model import DataSessionAccess, Person
@@ -12,7 +12,6 @@ from nsls2api.services import (
     bnlpeople_service,
     person_service,
     proposal_service,
-    facility_service,
 )
 
 router = fastapi.APIRouter()
