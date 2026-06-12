@@ -1,15 +1,18 @@
 from typing import Annotated
 
 import fastapi
-from fastapi import Depends
+from fastapi import Depends,Header, HTTPException
 
 from nsls2api.api.models.person_model import DataSessionAccess, Person
+from nsls2api.api.models.proposal_model import ProposalSummaryForUser, UserProposalsList
 from nsls2api.infrastructure.security import (
     get_current_user,
 )
 from nsls2api.services import (
     bnlpeople_service,
     person_service,
+    proposal_service,
+    facility_service,
 )
 
 router = fastapi.APIRouter()
@@ -92,3 +95,41 @@ async def get_myself(current_user: Annotated[Person, Depends(get_current_user)])
 async def get_data_sessions_by_username(username: str):
     data_access = await person_service.data_sessions_by_username(username)
     return data_access
+
+
+@router.get("/person/proposals", response_model=UserProposalsList, summary="Fetch proposals for a user including, SAF ID's, PI details")
+async def get_proposals_for_username(
+    username: str = Header(..., description="Username to fetch proposals for")
+):
+    if not username:
+        raise HTTPException(status_code=400, detail="Username header is required")
+
+    current_cycle, proposals = await proposal_service.fetch_proposals_for_username(
+        username
+    )
+
+    if current_cycle is None:
+        raise HTTPException(status_code=404, detail="No current operating cycle found")
+
+    proposal_summaries = []
+    for proposal in proposals:
+        pi = next((u for u in proposal.users if u.is_pi), None)
+        saf_ids = [s.saf_id for s in (proposal.safs or []) if s.saf_id]
+        proposal_summaries.append(
+            ProposalSummaryForUser(
+                proposal_id=proposal.proposal_id,
+                title=proposal.title,
+                saf_ids=saf_ids,
+                principal_investigator=pi,
+                instruments=proposal.instruments,
+                cycles=proposal.cycles,
+                data_session=proposal.data_session,
+            )
+        )
+
+    return UserProposalsList(
+        username=username,
+        count=len(proposal_summaries),
+        current_cycle=current_cycle,
+        proposals=proposal_summaries,
+    )

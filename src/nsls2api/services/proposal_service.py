@@ -807,3 +807,18 @@ async def generate_fake_test_proposal(
     await Proposal.insert_one(proposal)
 
     return proposal
+
+async def fetch_proposals_for_username(username: str, facility_name: FacilityName = FacilityName.nsls2) -> tuple[str | None, list[Proposal]]:
+    """Retrieve all proposals associated with given username for current operating cycle"""
+
+    current_cycle = await facility_service.current_operating_cycle(facility_name)
+
+    if not current_cycle: return None, []
+
+    proposals = await Proposal.find(
+        And(
+            ElemMatch(Proposal.users, {"username": username}),
+            In(Proposal.cycles, [current_cycle]),
+        )
+    ).to_list()
+    return current_cycle, proposals

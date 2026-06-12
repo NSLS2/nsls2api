@@ -164,3 +164,18 @@ class ProposalIdDataSessionList(pydantic.BaseModel):
     count: int
     page_size: int
     page: int
+
+class ProposalSummaryForUser(pydantic.BaseModel):
+    proposal_id: str
+    title: str
+    saf_ids: list[str]
+    principal_investigator: Optional[User]
+    instruments: Optional[list[str]]
+    cycles: Optional[list[str]]
+    data_session: Optional[str]
+
+class UserProposalsList(pydantic.BaseModel):
+    username: str
+    count: int
+    current_cycle: Optional[str] = None
+    proposals: list[ProposalSummaryForUser]
