@@ -14,6 +14,7 @@ test_cycle_name = "1999-1"
 PAGE = 1
 PAGE_SIZE = 10
 
+
 @pytest.mark.anyio
 async def test_get_beamline_specific_slack_channel_for_proposal():
     slack_channels = (
@@ -107,20 +108,21 @@ async def test_case_sensitivity_fetch_proposals():
 @pytest.mark.anyio
 async def test_data_sessions_endpoint(admin_api_key):
     async with AsyncClient(
-        transport=ASGITransport(app=app), base_url="http://test",
-        headers={"Authorization": admin_api_key['key']}  # Use the api_key fixture here
+        transport=ASGITransport(app=app),
+        base_url="http://test",
+        headers={"Authorization": admin_api_key["key"]},  # Use the api_key fixture here
     ) as ac:
         resp = await ac.get(
             "/v1/proposals/data-sessions",
             params={
                 "beamline": test_beamline_name,
                 "cycle": test_cycle_name,
-            "facility": "nsls2",
-            "page": PAGE,
-            "page_size": PAGE_SIZE,
-        },
-    )
-    
+                "facility": "nsls2",
+                "page": PAGE,
+                "page_size": PAGE_SIZE,
+            },
+        )
+
     assert resp.status_code == 200
     body = resp.json()
     print(resp.json())
@@ -137,12 +139,14 @@ async def test_data_sessions_endpoint(admin_api_key):
     assert first["proposal_id"] == test_proposal_id
     assert first["data_session"] == f"pass-{test_proposal_id}"
 
+
 @pytest.mark.anyio
 async def test_data_sessions_pagination(admin_api_key):
     small_page_size = 2
     async with AsyncClient(
-        transport=ASGITransport(app=app), base_url="http://test",
-        headers={"Authorization": admin_api_key['key']}  # Use the api_key fixture here
+        transport=ASGITransport(app=app),
+        base_url="http://test",
+        headers={"Authorization": admin_api_key["key"]},  # Use the api_key fixture here
     ) as ac:
         resp = await ac.get(
             "/v1/proposals/data-sessions",
@@ -164,11 +168,13 @@ async def test_data_sessions_pagination(admin_api_key):
         assert "proposal_id" in p
         assert "data_session" in p
 
+
 @pytest.mark.anyio
 async def test_data_sessions_invalid_beamline(admin_api_key):
     async with AsyncClient(
-        transport=ASGITransport(app=app), base_url="http://test",
-        headers={"Authorization": admin_api_key['key']}  # Use the api_key fixture here
+        transport=ASGITransport(app=app),
+        base_url="http://test",
+        headers={"Authorization": admin_api_key["key"]},  # Use the api_key fixture here
     ) as ac:
         resp = await ac.get(
             "/v1/proposals/data-sessions",

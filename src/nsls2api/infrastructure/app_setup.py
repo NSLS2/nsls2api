@@ -21,7 +21,7 @@ async def app_lifespan(app: FastAPI):
     logger.info(f"NSLS-II API Version: {get_version()}")
 
     # Initialize the MongoDB connection
-    await mongodb_setup.init_connection(settings.mongodb_dsn)
+    mongodb_client = await mongodb_setup.init_connection(settings.mongodb_dsn)
 
     # Create a shared httpx client
     httpx_client_wrapper.start()
@@ -35,3 +35,6 @@ async def app_lifespan(app: FastAPI):
 
     # Cleanup httpx client
     await httpx_client_wrapper.stop()
+
+    # Close MongoDB client
+    await mongodb_client.close()

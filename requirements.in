@@ -9,7 +9,6 @@ httpx
 httpx-socks[asyncio]
 jinja2
 jinja-partials
-motor
 n2snusertools
 passlib
 prometheus-fastapi-instrumentator

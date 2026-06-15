@@ -75,7 +75,12 @@ class Detector(pydantic.BaseModel):
 
 
 class DetectorView(pydantic.BaseModel):
-    detectors: list[Detector] | None = None
+    detectors: list[Detector] = pydantic.Field(default_factory=list)
+
+    @pydantic.field_validator("detectors", mode="before")
+    @classmethod
+    def convert_none_to_list(cls, v):
+        return [] if v is None else v
 
     class Settings:
         projection = {
@@ -231,6 +236,11 @@ class Beamline(beanie.Document):
         if isinstance(v, str):
             return [v]
         return v
+
+    @field_validator("detectors", "endstations", mode="before")
+    @classmethod
+    def convert_none_to_list(cls, v):
+        return [] if v is None else v
 
     @before_event(Insert)
     def uppercase_name(self):

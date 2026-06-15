@@ -20,7 +20,7 @@ jobs:
           - "3.13"
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           persist-credentials: false
 
@@ -29,7 +29,7 @@ jobs:
         run: sudo apt-get -y install libkrb5-dev
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
@@ -53,7 +53,7 @@ jobs:
           pip list
 
       - name: Start MongoDB
-        uses: supercharge/mongodb-github-action@90004df786821b6308fb02299e5835d0dae05d0d # 1.12.0
+        uses: supercharge/mongodb-github-action@315db7fe45ac2880b7758f1933e6e5d59afd5e94 # 1.12.1
         with:
           mongodb-version: "8.0"
 

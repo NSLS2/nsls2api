@@ -2,7 +2,7 @@
 #    uv pip compile requirements-dev.in -o requirements-dev.txt
 aiohappyeyeballs==2.6.1
     # via aiohttp
-aiohttp==3.12.14
+aiohttp==3.13.5
     # via
     #   aiohttp-jinja2
     #   textual-dev
@@ -11,44 +11,48 @@ aiohttp-jinja2==1.6
     # via textual-serve
 aiosignal==1.4.0
     # via aiohttp
+annotated-doc==0.0.4
+    # via typer
 annotated-types==0.7.0
     # via pydantic
-anyio==4.9.0
+anyio==4.13.0
     # via
     #   asyncer
     #   httpx
     #   watchfiles
 asgi-lifespan==2.1.0
     # via -r requirements-dev.in
-asttokens==3.0.0
+asttokens==3.0.1
     # via stack-data
-asyncer==0.0.8
+asyncer==0.0.17
     # via -r requirements-dev.in
-attrs==25.3.0
+attrs==26.1.0
     # via aiohttp
+backports-zstd==1.4.0
+    # via hatch
 bidict==0.23.1
     # via python-socketio
-black==25.1.0
+black==26.3.1
     # via -r requirements-dev.in
 blinker==1.9.0
     # via flask
-brotli==1.1.0
+brotli==1.2.0
     # via geventhttpclient
 bunnet==1.3.0
     # via -r requirements-dev.in
-certifi==2025.7.14
+certifi==2026.4.22
     # via
     #   geventhttpclient
     #   httpcore
     #   httpx
     #   requests
-cffi==1.17.1
+cffi==2.0.0
     # via cryptography
-cfgv==3.4.0
+cfgv==3.5.0
     # via pre-commit
-charset-normalizer==3.4.2
+charset-normalizer==3.4.7
     # via requests
-click==8.2.1
+click==8.3.3
     # via
     #   black
     #   bunnet
@@ -59,60 +63,59 @@ click==8.2.1
     #   typer
     #   userpath
     #   uvicorn
-configargparse==1.7.1
-    # via
-    #   locust
-    #   locust-cloud
-coverage==7.9.2
+configargparse==1.7.5
+    # via locust
+coverage==7.13.5
     # via -r requirements-dev.in
-cryptography==45.0.6
+cryptography==48.0.0
     # via secretstorage
 decorator==5.2.1
     # via ipython
 distlib==0.4.0
     # via virtualenv
-dnspython==2.7.0
+dnspython==2.8.0
     # via pymongo
-executing==2.2.0
+executing==2.2.1
     # via stack-data
-fastapi-cli==0.0.8
+fastapi-cli==0.0.24
     # via -r requirements-dev.in
-filelock==3.18.0
-    # via virtualenv
-flask==3.1.1
+filelock==3.29.0
+    # via
+    #   python-discovery
+    #   virtualenv
+flask==3.1.3
     # via
     #   flask-cors
     #   flask-login
     #   locust
-flask-cors==6.0.1
+flask-cors==6.0.2
     # via locust
 flask-login==0.6.3
     # via locust
-frozenlist==1.7.0
+frozenlist==1.8.0
     # via
     #   aiohttp
     #   aiosignal
-gevent==25.5.1
+gevent==25.9.1
     # via
     #   geventhttpclient
     #   locust
-    #   locust-cloud
-geventhttpclient==2.3.4
+geventhttpclient==2.3.9
     # via locust
-greenlet==3.2.3
+greenlet==3.5.0
     # via gevent
 h11==0.16.0
     # via
     #   httpcore
     #   uvicorn
     #   wsproto
-hatch==1.14.1
+hatch==1.16.5
     # via -r requirements-dev.in
 hatch-requirements-txt==0.4.1
     # via -r requirements-dev.in
 hatch-vcs==0.5.0
     # via -r requirements-dev.in
-hatchling==1.27.0
+hatchling==1.29.0
     # via
     #   -r requirements-dev.in
     #   hatch
@@ -120,24 +123,24 @@ hatchling==1.27.0
     #   hatch-vcs
 httpcore==1.0.9
     # via httpx
-httptools==0.6.4
+httptools==0.7.1
     # via uvicorn
 httpx==0.28.1
     # via hatch
 hyperlink==21.0.0
     # via hatch
-identify==2.6.12
+identify==2.6.19
     # via pre-commit
-idna==3.10
+idna==3.13
     # via
     #   anyio
     #   httpx
     #   hyperlink
     #   requests
     #   yarl
-iniconfig==2.1.0
+iniconfig==2.3.0
     # via pytest
-ipython==9.4.0
+ipython==9.13.0
     # via -r requirements-dev.in
 ipython-pygments-lexers==1.1.1
     # via ipython
@@ -145,11 +148,11 @@ itsdangerous==2.2.0
     # via flask
 jaraco-classes==3.4.0
     # via keyring
-jaraco-context==6.0.1
+jaraco-context==6.1.2
     # via keyring
-jaraco-functools==4.2.1
+jaraco-functools==4.4.0
     # via keyring
-jedi==0.19.2
+jedi==0.20.0
     # via ipython
 jeepney==0.9.0
     # via
@@ -160,51 +163,49 @@ jinja2==3.1.6
     #   aiohttp-jinja2
     #   flask
     #   textual-serve
-keyring==25.6.0
+keyring==25.7.0
     # via hatch
 lazy-model==0.2.0
     # via bunnet
-linkify-it-py==2.0.3
+linkify-it-py==2.1.0
     # via markdown-it-py
-locust==2.37.14
+locust==2.43.4
     # via -r requirements-dev.in
-locust-cloud==1.26.3
-    # via locust
-markdown-it-py[linkify,plugins]==3.0.0
+markdown-it-py==4.1.0
     # via
     #   mdit-py-plugins
     #   rich
     #   textual
-markupsafe==3.0.2
+markupsafe==3.0.3
     # via
     #   flask
     #   jinja2
     #   werkzeug
-matplotlib-inline==0.1.7
+matplotlib-inline==0.2.1
     # via ipython
-mdit-py-plugins==0.4.2
-    # via markdown-it-py
+mdit-py-plugins==0.5.0
+    # via textual
 mdurl==0.1.2
     # via markdown-it-py
-more-itertools==10.7.0
+more-itertools==11.0.2
     # via
     #   jaraco-classes
     #   jaraco-functools
-msgpack==1.1.1
+msgpack==1.1.2
     # via
     #   locust
     #   textual-dev
-multidict==6.6.3
+multidict==6.7.1
     # via
     #   aiohttp
     #   yarl
 mypy-extensions==1.1.0
     # via black
-nodeenv==1.9.1
+nodeenv==1.10.0
     # via
     #   pre-commit
     #   pyright
-packaging==25.0
+packaging==26.2
     # via
     #   black
     #   hatch
@@ -212,9 +213,10 @@ packaging==25.0
     #   hatchling
     #   pytest
     #   setuptools-scm
-parso==0.8.4
+    #   vcs-versioning
+parso==0.8.7
     # via jedi
-pathspec==0.12.1
+pathspec==1.1.1
     # via
     #   black
     #   hatchling
@@ -222,89 +224,100 @@ pexpect==4.9.0
     # via
     #   hatch
     #   ipython
-platformdirs==4.3.8
+platformdirs==4.9.6
     # via
     #   black
     #   hatch
-    #   locust-cloud
+    #   python-discovery
     #   textual
     #   virtualenv
 pluggy==1.6.0
     # via
     #   hatchling
     #   pytest
-pre-commit==4.2.0
+pre-commit==4.6.0
     # via pre-commit-uv
-pre-commit-uv==4.1.4
+pre-commit-uv==4.2.1
     # via -r requirements-dev.in
-prompt-toolkit==3.0.51
+prompt-toolkit==3.0.52
     # via ipython
-propcache==0.3.2
+propcache==0.4.1
     # via
     #   aiohttp
     #   yarl
-psutil==7.0.0
-    # via locust
+psutil==7.2.2
+    # via
+    #   ipython
+    #   locust
 ptyprocess==0.7.0
     # via pexpect
 pure-eval==0.2.3
     # via stack-data
-pycparser==2.22
+pycparser==3.0
     # via cffi
-pydantic==2.11.7
+pydantic==2.13.4
     # via
     #   bunnet
     #   lazy-model
-pydantic-core==2.33.2
+pydantic-core==2.46.4
     # via pydantic
-pygments==2.19.2
+pygments==2.20.0
     # via
     #   ipython
     #   ipython-pygments-lexers
     #   pytest
     #   rich
-pymongo==4.13.2
+    #   textual
+pymongo==4.17.0
     # via bunnet
-pyright==1.1.403
+pyproject-hooks==1.2.0
+    # via hatch
+pyright==1.1.409
     # via -r requirements-dev.in
-pytest==8.4.1
+pytest==9.0.3
     # via
     #   -r requirements-dev.in
-    #   pytest-asyncio
-pytest-asyncio==1.0.0
-    # via -r requirements-dev.in
-python-dotenv==1.1.1
+    #   locust
+python-discovery==1.3.0
+    # via
+    #   hatch
+    #   virtualenv
+python-dotenv==1.2.2
     # via uvicorn
-python-engineio==4.12.2
-    # via
-    #   locust-cloud
-    #   python-socketio
-python-socketio[client]==5.13.0
-    # via locust-cloud
-pyyaml==6.0.2
-    # via
-    #   pre-commit
-    #   uvicorn
-pyzmq==27.0.0
-    # via locust
-requests==2.32.4
+python-engineio==4.13.1
     # via
     #   locust
     #   python-socketio
-rich==14.0.0
+python-socketio==5.16.1
+    # via locust
+pytokens==0.4.1
+    # via black
+pyyaml==6.0.3
+    # via
+    #   pre-commit
+    #   uvicorn
+pyzmq==27.1.0
+    # via locust
+requests==2.33.1
+    # via
+    #   locust
+    #   python-socketio
+rich==15.0.0
     # via
     #   hatch
     #   rich-toolkit
     #   textual
     #   textual-serve
     #   typer
-rich-toolkit==0.14.8
+rich-toolkit==0.19.7
     # via fastapi-cli
-ruff==0.12.4
+ruff==0.15.12
     # via -r requirements-dev.in
-secretstorage==3.3.3
+secretstorage==3.5.0
     # via keyring
-setuptools-scm==8.3.1
+setuptools==82.0.1
+    # via setuptools-scm
+setuptools-scm==10.0.5
     # via hatch-vcs
 shellingham==1.5.4
     # via
@@ -314,88 +327,88 @@ simple-websocket==1.1.0
     # via python-engineio
 sniffio==1.3.1
     # via
-    #   anyio
     #   asgi-lifespan
+    #   asyncer
 stack-data==0.6.3
     # via ipython
-textual==4.0.0
+textual==8.2.5
     # via
     #   textual-dev
     #   textual-serve
-textual-dev==1.7.0
+textual-dev==1.8.0
     # via -r requirements-dev.in
-textual-serve==1.1.2
+textual-serve==1.1.3
     # via textual-dev
 toml==0.10.2
     # via bunnet
 tomli-w==1.2.0
     # via hatch
-tomlkit==0.13.3
+tomlkit==0.14.0
     # via hatch
-traitlets==5.14.3
+traitlets==5.15.0
     # via
     #   ipython
     #   matplotlib-inline
-trove-classifiers==2025.5.9.12
+trove-classifiers==2026.4.28.13
     # via hatchling
-typer==0.16.0
+typer==0.25.1
     # via fastapi-cli
-typing-extensions==4.14.1
+typing-extensions==4.15.0
     # via
     #   aiosignal
     #   anyio
+    #   asyncer
     #   pydantic
     #   pydantic-core
     #   pyright
     #   rich-toolkit
     #   textual
     #   textual-dev
-    #   typer
     #   typing-inspection
-typing-inspection==0.4.1
+typing-inspection==0.4.2
     # via pydantic
-uc-micro-py==1.0.3
+uc-micro-py==2.0.0
     # via linkify-it-py
-urllib3==2.5.0
+urllib3==2.6.3
     # via
     #   geventhttpclient
     #   requests
 userpath==1.9.2
     # via hatch
-uv==0.9.5
+uv==0.11.11
     # via
     #   -r requirements-dev.in
     #   hatch
     #   pre-commit-uv
-uvicorn[standard]==0.35.0
+uvicorn==0.46.0
     # via fastapi-cli
-uvloop==0.21.0
+uvloop==0.22.1
     # via uvicorn
-virtualenv==20.32.0
+vcs-versioning==1.1.1
+    # via setuptools-scm
+virtualenv==21.3.1
     # via
     #   hatch
     #   pre-commit
-watchfiles==1.1.0
+watchfiles==1.1.1
     # via uvicorn
-wcwidth==0.2.13
+wcwidth==0.7.0
     # via prompt-toolkit
-websocket-client==1.8.0
+websocket-client==1.9.0
     # via python-socketio
-websockets==15.0.1
+websockets==16.0
     # via uvicorn
-werkzeug==3.1.3
+werkzeug==3.1.8
     # via
     #   flask
     #   flask-cors
     #   flask-login
     #   locust
-wsproto==1.2.0
+wsproto==1.3.2
     # via simple-websocket
-yarl==1.20.1
+yarl==1.23.0
     # via aiohttp
-zope-event==5.1.1
+zope-event==6.2
     # via gevent
-zope-interface==7.2
+zope-interface==8.4
     # via gevent
-zstandard==0.23.0
-    # via hatch

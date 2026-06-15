@@ -56,7 +56,7 @@ async def _call_async_webservice(
         auth=auth,
         headers=headers,
     ) as client:
-        logger.logger(f"Calling {url} using unshared client.")
+        logger.debug(f"Calling {url} using unshared client.")
         resp: Response = await client.get(url)
         resp.raise_for_status()
         # if resp.status_code != 200:

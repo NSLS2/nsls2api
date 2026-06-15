@@ -4,6 +4,7 @@ from typing import List, Optional
 import beanie
 import pydantic
 import pymongo
+from pydantic import ConfigDict
 
 from nsls2api.models.slack_models import SlackChannel
 
@@ -48,8 +49,7 @@ class ProposalBase(pydantic.BaseModel):
 # -- Pydantic Model for Display/Transport --
 class ProposalDisplay(ProposalBase):
     # Prevent unwanted fields (like MongoDB _id) from breaking deserialization
-    class Config:
-        extra = "ignore"
+    model_config = ConfigDict(extra="ignore")
 
 
 # -- Beanie Model for Database --
