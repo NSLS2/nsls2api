@@ -177,5 +177,6 @@ class ProposalSummaryForUser(pydantic.BaseModel):
 class UserProposalsList(pydantic.BaseModel):
     username: str
     count: int
-    current_cycle: Optional[str] = None
+    page: int
+    page_size: int
     proposals: list[ProposalSummaryForUser]

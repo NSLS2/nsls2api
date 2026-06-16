@@ -808,17 +808,23 @@ async def generate_fake_test_proposal(
 
     return proposal
 
-async def fetch_proposals_for_username(username: str, facility_name: FacilityName = FacilityName.nsls2) -> tuple[str | None, list[Proposal]]:
+async def fetch_proposals_for_username(username: str, page_size: int = 10,
+    page: int = 1) -> tuple[str | None, list[Proposal]]:
     """Retrieve all proposals associated with given username for current operating cycle"""
 
-    current_cycle = await facility_service.current_operating_cycle(facility_name)
+    current_cycle = await facility_service.current_operating_cycle(FacilityName.nsls2)
 
     if not current_cycle: return None, []
 
-    proposals = await Proposal.find(
-        And(
-            ElemMatch(Proposal.users, {"username": username}),
-            In(Proposal.cycles, [current_cycle]),
+    proposals = (
+        await Proposal.find(
+            And(
+                ElemMatch(Proposal.users, {"username": username}),
+                In(Proposal.cycles, [current_cycle]),
+            )
         )
-    ).to_list()
+        .limit(page_size)
+        .skip(page_size * (page - 1))
+        .to_list()
+    )
     return current_cycle, proposals

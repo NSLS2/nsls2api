@@ -3,10 +3,10 @@ import fastapi
 
 from typing import Annotated
 
-from fastapi import Depends,Header, HTTPException, Request
+from fastapi import Depends,Header, HTTPException, Request, Query
 
 from nsls2api.api.models.person_model import DataSessionAccess, LDAPUserResponse, Person
-from nsls2api.api.models.proposal_model import ProposalSummaryForUser, UserProposalsList
+from nsls2api.api.models.proposal_model import Proposal, ProposalSummaryForUser, UserProposalsList
 from nsls2api.infrastructure.security import (
     get_current_user,
 )
@@ -117,13 +117,15 @@ async def get_data_sessions_by_username(username: str):
 
 @router.get("/person/proposals", response_model=UserProposalsList, summary="Fetch proposals for a user including, SAF ID's, PI details")
 async def get_proposals_for_username(
-    username: str = Header(..., description="Username to fetch proposals for")
+    username: str = Header(..., description="Username to fetch proposals for"),
+    page_size: int = Query(10, ge=1, le=200),
+    page: int = Query(1, ge=1),
 ):
     if not username:
         raise HTTPException(status_code=400, detail="Username header is required")
 
     current_cycle, proposals = await proposal_service.fetch_proposals_for_username(
-        username
+        username, page_size=page_size, page=page
     )
 
     if current_cycle is None:
@@ -148,6 +150,7 @@ async def get_proposals_for_username(
     return UserProposalsList(
         username=username,
         count=len(proposal_summaries),
-        current_cycle=current_cycle,
+        page=page,
+        page_size=page_size,
         proposals=proposal_summaries,
     )
