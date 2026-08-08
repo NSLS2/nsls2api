@@ -7,50 +7,100 @@ from nsls2api.infrastructure.logging import logger
 
 
 def to_hex(val):
-    
     if isinstance(val, bytes):
         return binascii.hexlify(val).decode()
     return None
 
+OPERATIONAL_ATTRIBUTES = [
+    'manager',
+    'objectGUID',
+    'objectSid',
+    'whenCreated',
+    'whenChanged',
+    'logonCount',
+    'lastLogon',
+    'sAMAccountType',
+    'street',
+    'badPasswordTime',
+    'memberOf'
+]
+
+
 def get_user_info(upn, ldap_server, ldap_base_dn, ldap_bind_user, bind_password):
-    conn = None 
+    conn = None
     try:
         server = Server(ldap_server)
         conn = Connection(server, user=ldap_bind_user, password=bind_password, auto_bind=True)
-        search_filter = f"(&(objectclass=person)(userPrincipalName={upn}))"
-        conn.search(ldap_base_dn, search_filter, attributes=['sAMAccountName'])
+
+        username = upn.split("@")[0]
+        posix_filter = f"(&(objectclass=posixaccount)(sAMAccountName={username}))"
+
+        # SEARCH 1: Get all regular attributes with ['*']
+        conn.search(ldap_base_dn, posix_filter, attributes=['*'])
 
         if not conn.entries:
-            logger.warning("No entries found for the given UPN.")
+            logger.warning(f"No posixaccount entries found for username: {username}")
             return None
 
         entry = conn.entries[0]
-        username = entry.sAMAccountName.value if 'sAMAccountName' in entry else None
-        if username is None:
-            return None
+        user = _extract_attributes(entry)
 
-        search_filter = f"(&(objectclass=posixaccount)(sAMAccountName={username}))"
-        conn.search(ldap_base_dn, search_filter, attributes=['*'])
+        # SEARCH 2: Always fetch operational attributes explicitly
+        logger.info(f"Search 2 - fetching operational attributes for: {username}")
+        conn.search(ldap_base_dn, posix_filter, attributes=OPERATIONAL_ATTRIBUTES)
 
-        if not conn.entries:
-            logger.warning("no posix entries found for the given username.")
-            return None
+        if conn.entries:
+            operational = _extract_attributes(conn.entries[0])
 
-        entry = conn.entries[0]
-        user = dict()
-        for attribute in entry.entry_attributes:
-            value = entry[attribute].value
-            if attribute in ("objectGUID", "objectSid"):
-                user[attribute] = value  # keep as bytes
-            else:
-                user[attribute] = str(value)
+            for attr, value in operational.items():
+                if attr not in user or user[attr] is None or user[attr] == "":
+                    user[attr] = value
+
+        # SEARCH 3: Check for still-missing operational attributes
+        missing_ops = [attr for attr in OPERATIONAL_ATTRIBUTES if not user.get(attr)]
+
+        if missing_ops:
+            logger.warning(f"Still missing after search 2 for {username}: {missing_ops}")
+
+            # Fetching each missing attribute individually hoping to bypass proxy cache since each is a unique query 
+            for attr in missing_ops:
+                logger.info(f"Search 3 - fetching individual attribute '{attr}' for {username}")
+                conn.search(ldap_base_dn, posix_filter, attributes=[attr])
+                if conn.entries:
+                    val = _extract_attributes(conn.entries[0])
+                    if val.get(attr):
+                        user[attr] = val[attr]
+
+        # FINAL VALIDATION: Log what we have and what's still missing
+        final_missing = [attr for attr in OPERATIONAL_ATTRIBUTES if not user.get(attr)]
+        if final_missing:
+            logger.warning(f"Final missing attributes for {username}: {final_missing} — user may not have these set in LDAP")
+        else:
+            logger.info(f"All operational attributes present for {username}")
+
+        logger.info(f"Final user dict has {len(user)} attributes for {username}")
+
         return user
+
     except Exception as e:
-        logger.error(f"LDAP Error: {e}")
+        logger.error(f"LDAP Error for UPN {upn}: {e}", exc_info=True)
         return None
     finally:
         if conn is not None:
             conn.unbind()
+
+
+def _extract_attributes(entry):
+    data = {}
+    for attribute in entry.entry_attributes:
+        value = entry[attribute].value
+        if isinstance(value, bytes):
+            data[attribute] = value
+        elif isinstance(value, list):
+            data[attribute] = value
+        else:
+            data[attribute] = str(value) if value is not None else None
+    return data
 
 def filetime_to_str(filetime):
     try:
@@ -63,11 +113,15 @@ def filetime_to_str(filetime):
 
 def generalized_time_to_str(gt):
     try:
-        if not gt: return ""
-        dt = datetime.strptime(gt.split(".")[0], "%Y%m%d%H%M%S")
+        if not gt:
+            return ""
+        if isinstance(gt, datetime):
+            return gt.strftime("%Y-%m-%d %H:%M:%S UTC")
+        gt_str = str(gt)
+        dt = datetime.strptime(gt_str.split(".")[0], "%Y%m%d%H%M%S")
         return dt.strftime("%Y-%m-%d %H:%M:%S UTC")
     except Exception:
-        return str(gt)
+        return str(gt) if gt else ""
 
 def decode_uac(uac):
     flags = []
@@ -87,9 +141,18 @@ def shape_ldap_response(user_info, dn=None, status="Read", read_time=None):
         if not groups_val:
             return []
         if isinstance(groups_val, list):
-            return groups_val
+            return [str(g) for g in groups_val]
         elif isinstance(groups_val, str):
             return [g.strip() for g in groups_val.replace("\n", ",").split(",") if g.strip()]
+        return []
+
+    def clean_object_class(obj_class_val):
+        if not obj_class_val:
+            return []
+        if isinstance(obj_class_val, list):
+            return [str(s).strip() for s in obj_class_val]
+        elif isinstance(obj_class_val, str):
+            return [s.strip() for s in obj_class_val.replace(",", " ").split() if s.strip()]
         return []
 
     return {
@@ -142,6 +205,6 @@ def shape_ldap_response(user_info, dn=None, status="Read", read_time=None):
             "codePage": user_info.get("codePage"),
             "countryCode": user_info.get("countryCode"),
             "instanceType": user_info.get("instanceType"),
-            "objectClass": [s.strip() for s in user_info.get("objectClass", "").split() if s.strip()]
+            "objectClass": clean_object_class(user_info.get("objectClass"))
         }
     }
