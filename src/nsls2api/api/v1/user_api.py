@@ -16,52 +16,47 @@ router = fastapi.APIRouter()
 
 @router.get("/person/username/{username}", response_model=Person)
 async def get_person_from_username(username: str):
-    bnl_person = await bnlpeople_service.get_person_by_username(username)
-    print(bnl_person)
-    if bnl_person:
-        person = Person(
-            firstname=bnl_person.FirstName,
-            lastname=bnl_person.LastName,
-            email=bnl_person.BNLEmail,
-            bnl_id=bnl_person.EmployeeNumber,
-            institution=bnl_person.Institution,
-            username=bnl_person.ActiveDirectoryName,
-            cyber_agreement_signed=bnl_person.CyberAgreementSigned,
-        )
-        # If the person is an Employee then set their institution to BNL
-        if (
-            bnl_person.EmployeeStatus == "Active"
-            and bnl_person.EmployeeType == "Employee"
-        ):
-            person.bnl_employee = True
-            person.institution = "Brookhaven National Laboratory"
-        return person
-    else:
-        return fastapi.responses.JSONResponse(
-            {"error": f"No people with username {username} found."},
-            status_code=404,
-        )
+    try:
+        bnl_person = await bnlpeople_service.get_person_by_username(username)
+    except LookupError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    
+    person = Person(
+        firstname=bnl_person.FirstName,
+        lastname=bnl_person.LastName,
+        email=bnl_person.BNLEmail,
+        bnl_id=bnl_person.EmployeeNumber,
+        institution=bnl_person.Institution,
+        username=bnl_person.ActiveDirectoryName,
+        cyber_agreement_signed=bnl_person.CyberAgreementSigned,
+    )
+    # If the person is an Employee then set their institution to BNL
+    if (
+        bnl_person.EmployeeStatus == "Active"
+        and bnl_person.EmployeeType == "Employee"
+    ):
+        person.bnl_employee = True
+        person.institution = "Brookhaven National Laboratory"
+    return person
 
 
 @router.get("/person/email/{email}")
 async def get_person_from_email(email: str):
-    bnl_person = await bnlpeople_service.get_person_by_email(email)
-    if bnl_person:
-        person = Person(
-            firstname=bnl_person.FirstName,
-            lastname=bnl_person.LastName,
-            email=bnl_person.BNLEmail,
-            bnl_id=bnl_person.EmployeeNumber,
-            institution=bnl_person.Institution,
-            username=bnl_person.ActiveDirectoryName,
-            cyber_agreement_signed=bnl_person.CyberAgreementSigned,
-        )
-        return person
-    else:
-        return fastapi.responses.JSONResponse(
-            {"error": f"No people with username {email} found."},
-            status_code=404,
-        )
+    try:
+        bnl_person = await bnlpeople_service.get_person_by_email(email)
+    except LookupError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    
+    person = Person(
+        firstname=bnl_person.FirstName,
+        lastname=bnl_person.LastName,
+        email=bnl_person.BNLEmail,
+        bnl_id=bnl_person.EmployeeNumber,
+        institution=bnl_person.Institution,
+        username=bnl_person.ActiveDirectoryName,
+        cyber_agreement_signed=bnl_person.CyberAgreementSigned,
+    )
+    return person
 
 
 # TODO: Add back into schema if we decide to use this endpoint.
