@@ -22,10 +22,16 @@ async def get_all_people():
 async def get_person_by_username(username: str) -> BNLPerson | None:
     url = f"{base_url}/api/BNLPeople?accountName={username}"
     person = await _call_bnlpeople_webservice(url)
-    if len(person) == 0 or len(person) > 1:
-        raise LookupError(
-            f"BNL People could not find a person with a username of '{username}'"
+    if len(person) == 0:
+        logger.warning(
+            f"BNL People API could not find a person with a username of '{username}'"
         )
+        raise LookupError(f"No person with username {username} found.")
+    if len(person) > 1:
+        logger.error(
+            f"BNL People API returned {len(person)} people for username '{username}' - ambiguous result"
+        )
+        raise ValueError(f"Multiple people found with username {username}.")
     return BNLPerson(**person[0])
 
 
@@ -44,7 +50,7 @@ async def get_username_by_id(lifenumber: str) -> str | None:
     # logger.debug(person)
     if len(person) == 0 or len(person) > 1:
         logger.warning(
-            f"BNL People could not find a person with an employee/life number of '{lifenumber}'"
+            f"BNL People API could not find a person with an employee/life number of '{lifenumber}'"
         )
         return None
 
@@ -67,7 +73,7 @@ async def get_person_by_id(lifenumber: str) -> BNLPerson | None:
 
     if len(person) == 0 or len(person) > 1:
         raise LookupError(
-            f"BNL People could not find a person with an employee/life number of '{lifenumber}'"
+            f"BNL People API could not find a person with an employee/life number of '{lifenumber}'"
         )
     return BNLPerson(**person[0])
 
@@ -75,10 +81,16 @@ async def get_person_by_id(lifenumber: str) -> BNLPerson | None:
 async def get_person_by_email(email: str) -> BNLPerson | None:
     url = f"{base_url}/api/BNLPeople?email={email}"
     person = await _call_bnlpeople_webservice(url)
-    if len(person) == 0 or len(person) > 1:
-        raise LookupError(
-            f"BNL People could not find a person with an email of '{email}'"
+    if len(person) == 0:
+        logger.warning(
+            f"BNL People API could not find a person with an email of '{email}'"
         )
+        raise LookupError(f"No person with email {email} found.")
+    if len(person) > 1:
+        logger.error(
+            f"BNL People API returned {len(person)} people for email '{email}' - ambiguous result"
+        )
+        raise ValueError(f"Multiple people found with email {email}. Query is ambiguous.")
     return BNLPerson(**person[0])
 
 
@@ -89,7 +101,7 @@ async def get_people_by_department(
     people = await _call_bnlpeople_webservice(url)
     if len(people) == 0:
         raise LookupError(
-            f"BNL People could not find a person with the department code of '{department_code}'"
+            f"BNL People API could not find a person with the department code of '{department_code}'"
         )
     people_in_department = [BNLPerson(**p) for p in people]
     return people_in_department

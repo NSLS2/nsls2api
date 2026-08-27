@@ -18,8 +18,10 @@ router = fastapi.APIRouter()
 async def get_person_from_username(username: str):
     try:
         bnl_person = await bnlpeople_service.get_person_by_username(username)
-    except LookupError:
-        raise HTTPException(status_code=404, detail=f"No people with username {username} found.")
+    except LookupError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     
     person = Person(
         firstname=bnl_person.FirstName,
@@ -44,8 +46,10 @@ async def get_person_from_username(username: str):
 async def get_person_from_email(email: str):
     try:
         bnl_person = await bnlpeople_service.get_person_by_email(email)
-    except LookupError:
-        raise HTTPException(status_code=404, detail=f"No people with email {email} found.")
+    except LookupError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     
     person = Person(
         firstname=bnl_person.FirstName,
@@ -56,6 +60,13 @@ async def get_person_from_email(email: str):
         username=bnl_person.ActiveDirectoryName,
         cyber_agreement_signed=bnl_person.CyberAgreementSigned,
     )
+    # If the person is an Employee then set their institution to BNL
+    if (
+        bnl_person.EmployeeStatus == "Active"
+        and bnl_person.EmployeeType == "Employee"
+    ):
+        person.bnl_employee = True
+        person.institution = "Brookhaven National Laboratory"
     return person
 
 

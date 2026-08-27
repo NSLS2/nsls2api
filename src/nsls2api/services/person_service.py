@@ -37,22 +37,11 @@ async def diagnostic_details_by_username(username: str) -> Person | None:
         )
         ad_groups = await n2sn_service.get_groups_by_username(username)
         proposals = await get_proposals_by_person(bnl_person.EmployeeNumber)
-    except LookupError as error:
+    except (LookupError, ValueError) as error:
         raise LookupError(
             f"Error obtaining diagnostic details for username of {username}"
         ) from error
 
-    print(bnl_person)
-    print("-------")
-
-    print(ad_person)
-    print("-------")
-
-    print(ad_groups)
-    print("-------")
-
-    print(proposals)
-    print("-------")
 
     person = Person(
         firstname=bnl_person.FirstName,
