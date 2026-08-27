@@ -4,6 +4,7 @@ from unittest.mock import AsyncMock, patch
 
 from nsls2api.main import app
 
+
 @pytest.mark.anyio
 async def test_get_person_by_username_not_found():
     """Test that requesting a non-existent username returns 404."""
