@@ -810,7 +810,8 @@ async def generate_fake_test_proposal(
                     is_pi=True,
                 )
                 user_list.append(user)
-        except (LookupError, ValueError):
+        except (LookupError, ValueError) as e:
+            logger.error(f"Could not find user {add_specific_user} in BNLPeople: {e}")
             return None
 
     fake_proposal_id = await generate_fake_proposal_id()

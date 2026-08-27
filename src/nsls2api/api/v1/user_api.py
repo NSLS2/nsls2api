@@ -42,7 +42,7 @@ async def get_person_from_username(username: str):
     return person
 
 
-@router.get("/person/email/{email}")
+@router.get("/person/email/{email}", response_model=Person)
 async def get_person_from_email(email: str):
     try:
         bnl_person = await bnlpeople_service.get_person_by_email(email)

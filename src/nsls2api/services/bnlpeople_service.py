@@ -19,7 +19,7 @@ async def get_all_people():
     return people
 
 
-async def get_person_by_username(username: str) -> BNLPerson | None:
+async def get_person_by_username(username: str) -> BNLPerson:
     url = f"{base_url}/api/BNLPeople?accountName={username}"
     person = await _call_bnlpeople_webservice(url)
     if len(person) == 0:
@@ -78,7 +78,7 @@ async def get_person_by_id(lifenumber: str) -> BNLPerson | None:
     return BNLPerson(**person[0])
 
 
-async def get_person_by_email(email: str) -> BNLPerson | None:
+async def get_person_by_email(email: str) -> BNLPerson:
     url = f"{base_url}/api/BNLPeople?email={email}"
     person = await _call_bnlpeople_webservice(url)
     if len(person) == 0:
