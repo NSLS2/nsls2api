@@ -9,6 +9,11 @@ from nsls2api.services.helpers import (
 base_url = "https://api.bnl.gov/BNLPeople"
 
 
+class AmbiguousPersonLookupError(Exception):
+    """Raised when a person lookup returns multiple results (data integrity issue)."""
+    pass
+
+
 async def _call_bnlpeople_webservice(url: str):
     return await _call_async_webservice_with_client(url, client=httpx_client_wrapper())
 
@@ -31,7 +36,9 @@ async def get_person_by_username(username: str) -> BNLPerson:
         logger.error(
             f"BNL People API returned {len(person)} people for username '{username}' - ambiguous result"
         )
-        raise ValueError(f"Multiple people found with username {username}.")
+        raise AmbiguousPersonLookupError(
+            "Internal server error: ambiguous person lookup"
+        )
     return BNLPerson(**person[0])
 
 
@@ -90,7 +97,9 @@ async def get_person_by_email(email: str) -> BNLPerson:
         logger.error(
             f"BNL People API returned {len(person)} people for email '{email}' - ambiguous result"
         )
-        raise ValueError(f"Multiple people found with email {email}. Query is ambiguous.")
+        raise AmbiguousPersonLookupError(
+            "Internal server error: ambiguous person lookup"
+        )
     return BNLPerson(**person[0])
 
 
