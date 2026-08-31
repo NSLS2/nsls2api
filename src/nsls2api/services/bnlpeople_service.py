@@ -31,7 +31,7 @@ async def get_person_by_username(username: str) -> BNLPerson:
         logger.warning(
             f"BNL People API could not find a person with a username of '{username}'"
         )
-        raise LookupError(f"BNL People could not find a person with a username of '{username}'")
+        raise LookupError(f"BNL People API could not find a person with a username of '{username}'")
     if len(person) > 1:
         logger.error(
             f"BNL People API returned {len(person)} people for username '{username}' - ambiguous result"
@@ -92,7 +92,7 @@ async def get_person_by_email(email: str) -> BNLPerson:
         logger.warning(
             f"BNL People API could not find a person with an email of '{email}'"
         )
-        raise LookupError(f"BNL People could not find a person with an email of '{email}'")
+        raise LookupError(f"BNL People API could not find a person with an email of '{email}'")
     if len(person) > 1:
         logger.error(
             f"BNL People API returned {len(person)} people for email '{email}' - ambiguous result"
