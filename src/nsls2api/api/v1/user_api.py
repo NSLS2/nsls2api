@@ -22,13 +22,8 @@ async def get_person_from_username(username: str):
     except LookupError as e:
         raise HTTPException(
             status_code=404,
-            detail=str(e),
-        ) from e
-    except AmbiguousPersonLookupError as e:
-        raise HTTPException(
-            status_code=500,
-            detail=str(e),
-        ) from e
+            detail=f"No person with username {username} was found.",
+        ) from None
     
     person = Person(
         firstname=bnl_person.FirstName,
@@ -56,13 +51,8 @@ async def get_person_from_email(email: str):
     except LookupError as e:
         raise HTTPException(
             status_code=404,
-            detail=str(e),
-        ) from e
-    except AmbiguousPersonLookupError as e:
-        raise HTTPException(
-            status_code=500,
-            detail=str(e),
-        ) from e
+            detail=f"No person with email {email} was found.",
+        ) from None
     
     person = Person(
         firstname=bnl_person.FirstName,

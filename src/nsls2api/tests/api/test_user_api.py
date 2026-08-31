@@ -21,12 +21,12 @@ async def test_get_person_by_username_not_found():
     assert response.status_code == 404
     response_json = response.json()
     assert "detail" in response_json
-    assert "No person with username nonexistent_user_xyz123 found." in response_json["detail"]
+    assert "No person with username nonexistent_user_xyz123 was found." in response_json["detail"]
 
 
 @pytest.mark.anyio
 async def test_get_person_by_username_multiple_found():
-    """Test that multiple people with same username returns 500."""
+    """Test that multiple people with same username returns 500 via exception handler."""
     # Mock API response with 2 people
     mock_api_response = [
         {
@@ -63,14 +63,13 @@ async def test_get_person_by_username_multiple_found():
         return_value=mock_api_response,
     ):
         async with AsyncClient(
-            transport=ASGITransport(app=app), base_url="http://test"
+            transport=ASGITransport(app=app, raise_app_exceptions=False),
+            base_url="http://test",
         ) as ac:
             response = await ac.get("/v1/person/username/jdoe")
     
     assert response.status_code == 500
-    response_json = response.json()
-    assert "detail" in response_json
-    assert "Internal server error: ambiguous person lookup" in response_json["detail"]
+    assert response.text == "Internal Server Error"
 
 
 @pytest.mark.anyio
@@ -132,12 +131,12 @@ async def test_get_person_by_email_not_found():
     assert response.status_code == 404
     response_json = response.json()
     assert "detail" in response_json
-    assert "No person with email nonexistent@example.com found." in response_json["detail"]
+    assert "No person with email nonexistent@example.com was found." in response_json["detail"]
 
 
 @pytest.mark.anyio
 async def test_get_person_by_email_multiple_found():
-    """Test that multiple people with same email returns 500."""
+    """Test that multiple people with same email returns 500 via exception handler."""
     # Mock API response with 2 people
     mock_api_response = [
         {
@@ -174,14 +173,13 @@ async def test_get_person_by_email_multiple_found():
         return_value=mock_api_response,
     ):
         async with AsyncClient(
-            transport=ASGITransport(app=app), base_url="http://test"
+            transport=ASGITransport(app=app, raise_app_exceptions=False),
+            base_url="http://test",
         ) as ac:
             response = await ac.get("/v1/person/email/jane@example.com")
     
     assert response.status_code == 500
-    response_json = response.json()
-    assert "detail" in response_json
-    assert "Internal server error: ambiguous person lookup" in response_json["detail"]
+    assert response.text == "Internal Server Error"
 
 
 @pytest.mark.anyio
