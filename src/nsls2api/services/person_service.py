@@ -6,6 +6,7 @@ from nsls2api.api.models.person_model import (
     Person,
     PersonSummary,
 )
+from nsls2api.infrastructure.logging import logger
 from nsls2api.services import (
     beamline_service,
     bnlpeople_service,
@@ -13,6 +14,7 @@ from nsls2api.services import (
     n2sn_service,
     proposal_service,
 )
+from nsls2api.services.bnlpeople_service import AmbiguousPersonLookupError
 from nsls2api.services.pass_service import get_proposals_by_person
 
 
@@ -37,22 +39,16 @@ async def diagnostic_details_by_username(username: str) -> Person | None:
         )
         ad_groups = await n2sn_service.get_groups_by_username(username)
         proposals = await get_proposals_by_person(bnl_person.EmployeeNumber)
-    except LookupError as error:
+    except (LookupError, AmbiguousPersonLookupError) as error:
         raise LookupError(
-            f"Error obtaining diagnostic details for username of {username}"
+            f"Error obtaining diagnostic details for username '{username}'"
         ) from error
 
-    print(bnl_person)
-    print("-------")
+    logger.debug(f"bnl_person: {bnl_person}")
+    logger.debug(f"ad_person: {ad_person}")
+    logger.debug(f"ad_groups: {ad_groups}")
+    logger.debug(f"proposals: {proposals}")
 
-    print(ad_person)
-    print("-------")
-
-    print(ad_groups)
-    print("-------")
-
-    print(proposals)
-    print("-------")
 
     person = Person(
         firstname=bnl_person.FirstName,
