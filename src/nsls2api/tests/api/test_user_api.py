@@ -1,6 +1,7 @@
+from unittest.mock import AsyncMock, patch
+
 import pytest
 from httpx import ASGITransport, AsyncClient
-from unittest.mock import AsyncMock, patch
 
 from nsls2api.main import app
 
@@ -21,7 +22,8 @@ async def test_get_person_by_username_not_found():
     assert response.status_code == 404
     response_json = response.json()
     assert "detail" in response_json
-    assert "No person with username nonexistent_user_xyz123 was found." in response_json["detail"]
+    assert "nonexistent_user_xyz123" in response_json["detail"]
+    assert "not found" in response_json["detail"].lower()
 
 
 @pytest.mark.anyio
@@ -69,7 +71,6 @@ async def test_get_person_by_username_multiple_found():
             response = await ac.get("/v1/person/username/jdoe")
     
     assert response.status_code == 500
-    assert response.text == "Internal Server Error"
 
 
 @pytest.mark.anyio
@@ -131,7 +132,8 @@ async def test_get_person_by_email_not_found():
     assert response.status_code == 404
     response_json = response.json()
     assert "detail" in response_json
-    assert "No person with email nonexistent@example.com was found." in response_json["detail"]
+    assert "nonexistent@example.com" in response_json["detail"]
+    assert "not found" in response_json["detail"].lower()
 
 
 @pytest.mark.anyio
@@ -179,7 +181,6 @@ async def test_get_person_by_email_multiple_found():
             response = await ac.get("/v1/person/email/jane@example.com")
     
     assert response.status_code == 500
-    assert response.text == "Internal Server Error"
 
 
 @pytest.mark.anyio

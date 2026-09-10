@@ -9,7 +9,6 @@ from nsls2api.services import (
     bnlpeople_service,
     person_service,
 )
-from nsls2api.services.bnlpeople_service import AmbiguousPersonLookupError
 from nsls2api.services.ldap_service import get_user_info, shape_ldap_response
 
 router = fastapi.APIRouter()
@@ -19,10 +18,10 @@ router = fastapi.APIRouter()
 async def get_person_from_username(username: str):
     try:
         bnl_person = await bnlpeople_service.get_person_by_username(username)
-    except LookupError as e:
+    except LookupError:
         raise HTTPException(
             status_code=404,
-            detail=f"No person with username {username} was found.",
+            detail=f"Person with username '{username}' was not found.",
         ) from None
     
     person = Person(
@@ -48,10 +47,10 @@ async def get_person_from_username(username: str):
 async def get_person_from_email(email: str):
     try:
         bnl_person = await bnlpeople_service.get_person_by_email(email)
-    except LookupError as e:
+    except LookupError:
         raise HTTPException(
             status_code=404,
-            detail=f"No person with email {email} was found.",
+            detail=f"Person with email '{email}' was not found.",
         ) from None
     
     person = Person(
