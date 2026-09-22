@@ -71,6 +71,7 @@ async def test_get_person_by_username_multiple_found():
             response = await ac.get("/v1/person/username/jdoe")
     
     assert response.status_code == 500
+    assert response.headers.get("x-request-id")
 
 
 @pytest.mark.anyio
@@ -181,6 +182,7 @@ async def test_get_person_by_email_multiple_found():
             response = await ac.get("/v1/person/email/jane@example.com")
     
     assert response.status_code == 500
+    assert response.headers.get("x-request-id")
 
 
 @pytest.mark.anyio

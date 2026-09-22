@@ -13,7 +13,7 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
         request,
         HTTPException(
             500,
-            "Internal server error - unhandled exception",
+            "Internal server error",
             headers={"X-Request-ID": correlation_id.get() or ""},
         ),
     )

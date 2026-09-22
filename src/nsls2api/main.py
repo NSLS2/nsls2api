@@ -66,6 +66,9 @@ app.add_middleware(
     expose_headers=["X-Request-ID"],
 )
 
+# Register exception_handlers with the app
+from nsls2api import exception_handlers  # noqa: E402, F401
+
 
 def configure_routing():
     app.include_router(proposal_api_v1.router, prefix="/v1", tags=["proposal"])
