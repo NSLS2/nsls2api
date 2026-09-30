@@ -28,6 +28,7 @@ from nsls2api.services import (
     facility_service,
     pass_service,
 )
+from nsls2api.services.bnlpeople_service import AmbiguousPersonLookupError
 
 
 async def get_locked_proposals(
@@ -810,8 +811,10 @@ async def generate_fake_test_proposal(
                     is_pi=True,
                 )
                 user_list.append(user)
-        except LookupError:
-            logger.error(f"Could not find user {add_specific_user} in BNLPeople.")
+        except (AmbiguousPersonLookupError, LookupError):
+            logger.error(
+                f"Could not resolve user '{add_specific_user}' in BNLPeople to add to fake test proposal."
+            )
             return None
 
     fake_proposal_id = await generate_fake_proposal_id()

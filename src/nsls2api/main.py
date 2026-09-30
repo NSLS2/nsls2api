@@ -17,6 +17,7 @@ from nsls2api.api.v1 import jobs_api as jobs_api_v1
 from nsls2api.api.v1 import proposal_api as proposal_api_v1
 from nsls2api.api.v1 import stats_api as stats_api_v1
 from nsls2api.api.v1 import user_api as user_api_v1
+from nsls2api.exception_handlers import register_exception_handlers
 from nsls2api.infrastructure import app_setup
 from nsls2api.infrastructure.config import get_settings
 from nsls2api.infrastructure.logging import logger
@@ -49,6 +50,7 @@ middleware = [Middleware(ProcessTimeMiddleware)]
 app = fastapi.FastAPI(
     title="NSLS-II API", middleware=middleware, lifespan=app_setup.app_lifespan
 )
+register_exception_handlers(app)
 
 # Instrument the app and expose the /metrics endpoint
 # (this is equivalent to calling instrumentator.instrument(app)
@@ -65,7 +67,6 @@ app.add_middleware(
     allow_headers=["X-Requested-With", "X-Request-ID"],
     expose_headers=["X-Request-ID"],
 )
-
 
 def configure_routing():
     app.include_router(proposal_api_v1.router, prefix="/v1", tags=["proposal"])

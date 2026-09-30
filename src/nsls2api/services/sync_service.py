@@ -2,7 +2,6 @@ import datetime
 
 from beanie import UpdateResponse
 from beanie.operators import AddToSet, Set
-from httpx import HTTPStatusError
 
 from nsls2api.api.models.facility_model import FacilityName
 from nsls2api.api.models.person_model import ActiveDirectoryUser
@@ -26,6 +25,7 @@ from nsls2api.services import (
     pass_service,
     proposal_service,
 )
+from nsls2api.services.bnlpeople_service import AmbiguousPersonLookupError
 
 
 async def worker_synchronize_dataadmins(skip_beamlines=False) -> None:
@@ -292,10 +292,10 @@ async def synchronize_proposal_from_pass(
             )
             bnl_username = await bnlpeople_service.get_username_by_id(user.BNL_ID)
             logger.debug(f"     ---> {bnl_username}")
-        except HTTPStatusError as error:
-            logger.error(f"Could not find BNL username for BNL ID '{user.BNL_ID}'.")
-            logger.error(f"BNL People API returned: {error}")
-            bnl_username = None
+        except (AmbiguousPersonLookupError, LookupError):
+            logger.error(
+                f"Error obtaining username for BNL ID '{user.BNL_ID}'"
+            )
 
         userinfo = User(
             first_name=user.First_Name,
@@ -311,9 +311,15 @@ async def synchronize_proposal_from_pass(
     # Let's add the PI explicitly anyway as PASS sometimes includes the PI in the
     # Experimenters list and sometimes not.
     if pass_proposal.PI and not pi_found_in_experimenters:
-        bnl_username = await bnlpeople_service.get_username_by_id(
-            pass_proposal.PI.BNL_ID
-        )
+        bnl_username = None
+        try:
+            bnl_username = await bnlpeople_service.get_username_by_id(
+                pass_proposal.PI.BNL_ID
+            )
+        except (AmbiguousPersonLookupError, LookupError):
+            logger.error(
+                f"Error obtaining username for PI with BNL ID '{pass_proposal.PI.BNL_ID}'"
+            )
         pi_info = User(
             first_name=pass_proposal.PI.First_Name,
             last_name=pass_proposal.PI.Last_Name,
