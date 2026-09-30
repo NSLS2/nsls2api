@@ -10,7 +10,6 @@ from prometheus_fastapi_instrumentator import Instrumentator
 from starlette.middleware import Middleware
 from starlette.staticfiles import StaticFiles
 
-from nsls2api import exception_handlers
 from nsls2api.api.v1 import admin_api as admin_api_v1
 from nsls2api.api.v1 import beamline_api as beamline_api_v1
 from nsls2api.api.v1 import facility_api as facility_api_v1
@@ -18,6 +17,7 @@ from nsls2api.api.v1 import jobs_api as jobs_api_v1
 from nsls2api.api.v1 import proposal_api as proposal_api_v1
 from nsls2api.api.v1 import stats_api as stats_api_v1
 from nsls2api.api.v1 import user_api as user_api_v1
+from nsls2api.exception_handlers import register_exception_handlers
 from nsls2api.infrastructure import app_setup
 from nsls2api.infrastructure.config import get_settings
 from nsls2api.infrastructure.logging import logger
@@ -50,7 +50,7 @@ middleware = [Middleware(ProcessTimeMiddleware)]
 app = fastapi.FastAPI(
     title="NSLS-II API", middleware=middleware, lifespan=app_setup.app_lifespan
 )
-exception_handlers.register_exception_handlers(app)
+register_exception_handlers(app)
 
 # Instrument the app and expose the /metrics endpoint
 # (this is equivalent to calling instrumentator.instrument(app)

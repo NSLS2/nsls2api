@@ -3,9 +3,8 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.exception_handlers import http_exception_handler
 
 
-# This is to make sure we add the request ID to the response headers for the case
-# of unhandled server errors.
 async def unhandled_exception_handler(request: Request, exc: Exception):
+    """Add the correlation ID to responses for unhandled server errors."""
     return await http_exception_handler(
         request,
         HTTPException(
@@ -17,4 +16,6 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
 
 
 def register_exception_handlers(app: FastAPI):
+    """Register all exception handlers for the app."""
+    # Generic Exception must be listed last.
     app.add_exception_handler(Exception, unhandled_exception_handler)
