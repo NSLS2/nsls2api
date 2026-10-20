@@ -57,7 +57,7 @@ jobs:
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@315db7fe45ac2880b7758f1933e6e5d59afd5e94 # 1.12.1
         with:
-          mongodb-version: "8.0.32"
+          mongodb-version: "8.0"
 
       - name: Test with pytest
         run: |
