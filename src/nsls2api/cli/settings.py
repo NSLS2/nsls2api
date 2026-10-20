@@ -1,8 +1,11 @@
 import configparser
 import os
+import sys
 from enum import Enum
 from pathlib import Path
 from typing import Any
+
+from nsls2api.cli import settings_migration
 
 
 class ApiEnvironment(str, Enum):
@@ -23,16 +26,34 @@ class Config:
 
     @staticmethod
     def get_filepath() -> Path:
-        """Get the configuration file path"""
-        config_user_home = os.path.expanduser("~")
-        return Path(config_user_home) / ".config" / "nsls2"
+        """Get the configuration file path ($XDG_CONFIG_HOME/nsls2/api/cli.ini).
+
+        Respects XDG_CONFIG_HOME if set; falls back to ~/.config on POSIX and
+        %APPDATA% on Windows.
+        """
+        if sys.platform == "win32":
+            appdata = os.environ.get("APPDATA", "").strip()
+            base = Path(appdata) if appdata else Path.home() / "AppData" / "Roaming"
+        else:
+            xdg = os.environ.get("XDG_CONFIG_HOME", "").strip()
+            base = Path(xdg) if xdg else Path.home() / ".config"
+        return base / "nsls2" / "api" / "cli.ini"
 
     @classmethod
     def read(cls) -> configparser.ConfigParser:
-        """Read the configuration file"""
-        config = configparser.ConfigParser()
+        """Read the configuration file, migrating legacy config if present.
+
+        If migration was skipped or failed and the new config file does not yet
+        exist, fall back to reading the legacy bare file so existing settings
+        (base_url, token) are not silently dropped.
+        """
         config_filepath = cls.get_filepath()
-        config.read(config_filepath)
+        settings_migration.migrate_legacy_config(config_filepath)
+        config = configparser.ConfigParser()
+        if config_filepath.is_file():
+            config.read(config_filepath)
+        else:
+            settings_migration.read_legacy_fallback(config, config_filepath)
         return config
 
     @classmethod
