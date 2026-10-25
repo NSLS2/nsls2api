@@ -49,7 +49,7 @@ class CycleProposalList(pydantic.BaseModel):
 
 class RecentProposal(pydantic.BaseModel):
     proposal_id: str
-    title: str
+    title: str | None = None
     updated: datetime.datetime
     instruments: list[str] | None
 
