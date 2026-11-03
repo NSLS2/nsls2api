@@ -13,7 +13,7 @@ jobs:
   build:
 
     # mongo:8.0 fails to start on the newer Ubuntu runner kernel (SERVER-121912,
-    # actions/runner-images#15005). Return to ubuntu-latest once mongo:8.0.37 is out.
+    # actions/runner-images#15005). Return to ubuntu-latest once mongo:8.0 includes SERVER-131779.
     runs-on: ubuntu-22.04
     strategy:
       matrix:
