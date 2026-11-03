@@ -12,7 +12,9 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    # mongo:8.0 fails to start on the newer Ubuntu runner kernel (SERVER-121912,
+    # actions/runner-images#15005). Return to ubuntu-latest once mongo:8.0.37 is out.
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         python-version:
