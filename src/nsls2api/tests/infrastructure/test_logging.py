@@ -2,6 +2,7 @@ import importlib
 import io
 import logging
 import sys
+import time
 from pathlib import Path
 
 import pytest
@@ -83,6 +84,33 @@ def test_leaves_other_text_alone(text):
     assert redact_api_keys(text) == text
 
 
+@pytest.mark.parametrize(
+    "shape",
+    [
+        "a",
+        "?",
+        "&",
+        "?a",
+        "&a",
+        "?a=",
+        "=",
+        " a",
+        "%61",
+        "?&=",
+    ],
+)
+def test_redaction_takes_linear_time_on_long_input(shape):
+    # A client controls the request line, so a long one must not stall the
+    # worker. A pattern that rescans the line from every position takes
+    # seconds here, and this takes a few milliseconds.
+    text = "/v1/proposals/?" + shape * (64_000 // len(shape))
+
+    start = time.perf_counter()
+    redact_api_keys(text)
+
+    assert time.perf_counter() - start < 1.0
+
+
 def test_filter_rewrites_the_access_log_request_line():
     record = make_access_record(f"/v1/proposal/1/slack-channels?api_key={FAKE_KEY}")
 
@@ -139,6 +167,8 @@ def test_filter_survives_a_malformed_log_call():
     assert RedactApiKeyFilter().filter(record) is True
 
     assert FAKE_KEY not in record.msg
+    assert record.msg.endswith("(malformed log call)")
+    assert record.getMessage() == record.msg
 
 
 def test_filter_redacts_an_exception_used_as_the_message():
@@ -190,6 +220,37 @@ def test_filter_leaves_other_arguments_unchanged():
     assert RedactApiKeyFilter().filter(record) is True
 
     assert record.args == (error, 3)
+
+
+class FailsToConvert:
+    def __str__(self):
+        raise RuntimeError("could not convert")
+
+
+class ExceptionThatFailsToConvert(Exception):
+    def __str__(self):
+        raise RuntimeError("could not convert")
+
+
+@pytest.mark.parametrize(
+    "msg, args",
+    [
+        (FailsToConvert(), None),
+        ("request failed: %s", (ExceptionThatFailsToConvert(),)),
+        (f"api_key=%s {FAKE_KEY}", (FailsToConvert(),)),
+    ],
+)
+def test_filter_never_raises_and_withholds_what_it_cannot_check(msg, args):
+    record = logging.LogRecord("x", logging.ERROR, __file__, 1, msg, args, None)
+    record.exc_text = f"ValueError: ?api_key={FAKE_KEY}"
+
+    assert RedactApiKeyFilter().filter(record) is True
+
+    assert record.getMessage() == (
+        "log message withheld: redaction failed (RuntimeError)"
+    )
+    assert record.exc_text is None
+    assert FAKE_KEY not in logging.Formatter("%(message)s").format(record)
 
 
 def make_exception_record(exc_info) -> logging.LogRecord:

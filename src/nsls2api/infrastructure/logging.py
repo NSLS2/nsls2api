@@ -12,7 +12,13 @@ REDACTED = "REDACTED"
 # A name=value pair, as found in a query string. The name is decoded before it
 # is compared, because FastAPI decodes parameter names: "api%5Fkey" and
 # "%61pi_key" authenticate just like "api_key".
-_NAME_VALUE_PAIR = re.compile(r"(?P<name>[^\s&?=#\"'/]+)=(?P<value>[^&\s\"]*)")
+#
+# A pair may only start at the beginning of the text or after whitespace, "?"
+# or "&", and a name stops at the next of those. Without that, regex parsing
+# would take quadratic time on input length from unknown clients.
+_NAME_VALUE_PAIR = re.compile(
+    r"(?<![^\s?&])(?P<name>[^\s&?=#\"']*)=(?P<value>[^&\s\"]*)"
+)
 
 # Backstop: anything shaped like one of our API keys, wherever it appears.
 _API_KEY_TOKEN = re.compile(r"nsls2-api-[0-9a-f]+", re.IGNORECASE)
@@ -52,9 +58,24 @@ class RedactApiKeyFilter(logging.Filter):
     """
 
     def filter(self, record: logging.LogRecord) -> bool:
-        self._redact_message(record)
-        self._redact_exception_text(record)
+        # A filter runs before logging's own error handling, so anything it
+        # raises could crash the application. Never let that happen.
+        try:
+            self._redact_message(record)
+            self._redact_exception_text(record)
+        except Exception as error:  # noqa: BLE001 # a filter must never raise
+            self._withhold(record, error)
         return True
+
+    @staticmethod
+    def _withhold(record: logging.LogRecord, error: Exception) -> None:
+        # An error prevented redaction, so do not let the log record through.
+        # The error type is safe to show; its text may not be.
+        record.msg = f"log message withheld: redaction failed ({type(error).__name__})"
+        record.args = None
+        record.exc_info = None
+        record.exc_text = None
+        record.stack_info = None
 
     @staticmethod
     def _redact_message(record: logging.LogRecord) -> None:
@@ -68,8 +89,8 @@ class RedactApiKeyFilter(logging.Filter):
             try:
                 record.msg = redact_api_keys(record.getMessage())
             except (TypeError, ValueError, KeyError):
-                # A malformed log call: logging reports it when it formats
-                record.msg = redacted_template
+                # A malformed log call. The arguments are dropped, so say so.
+                record.msg = f"{redacted_template} (malformed log call)"
             record.args = None
             return
 
@@ -87,6 +108,7 @@ class RedactApiKeyFilter(logging.Filter):
     def _redact_exception_text(record: logging.LogRecord) -> None:
         # Formatters add the traceback after the filters have run, and reuse
         # exc_text when it is set, so fill it in here with the redacted text.
+        # (A formatter with its own formatException would not use this text.)
         if record.exc_info and not record.exc_text:
             record.exc_text = logging.Formatter().formatException(record.exc_info)
 
