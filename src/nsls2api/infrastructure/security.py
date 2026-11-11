@@ -17,7 +17,14 @@ TOKEN_BYTE_LENGTH = 32
 API_KEY_PREFIX = "nsls2-api-"
 
 api_key_header = APIKeyHeader(name="Authorization", auto_error=False)
-api_key_query = APIKeyQuery(name="api_key", auto_error=False)
+api_key_query = APIKeyQuery(
+    name="api_key",
+    auto_error=False,
+    description=(
+        "Deprecated: a key in the URL is recorded by proxies, browsers and logs. "
+        "Send the key in the Authorization header instead."
+    ),
+)
 
 
 def hash_api_key(api_key):
@@ -29,9 +36,17 @@ def verify_hashed_key(api_key, hashed_api_key):
 
 
 async def get_api_key(
+    request: Request,
     query_key: str = Security(api_key_query),
     header_key: str = Security(api_key_header),
 ):
+    if query_key is not None:
+        # Log the path only: the query string holds the key.
+        logger.warning(
+            f"API key supplied in the URL (deprecated): "
+            f"{request.method} {request.url.path}. Use the Authorization header."
+        )
+
     for api_key in [query_key, header_key]:
         if api_key is not None:
             return api_key
@@ -72,7 +87,9 @@ async def generate_api_key(username: str, usertype=ApiUserType.user):
         # Now that we have saved a new key for this user, we should invalidate any other keys
         for old_key in old_keys:
             if old_key.valid:
-                logger.info(f"Invalidating old key: {old_key}")
+                logger.info(
+                    f"Invalidating old key {old_key.first_eight} for user {username}"
+                )
                 old_key.valid = False
                 await old_key.save(link_rule=WriteRules.WRITE)
 
@@ -107,9 +124,7 @@ async def lookup_api_key(token: str) -> ApiKey:
     )
 
     if apikey is None:
-        raise LookupError(
-            f"Could not find an API key matching the one supplied: {token}"
-        )
+        raise LookupError("Could not find an API key matching the one supplied")
 
     return apikey
 
