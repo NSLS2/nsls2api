@@ -16,8 +16,11 @@ REDACTED = "REDACTED"
 # A pair may only start at the beginning of the text or after whitespace, "?"
 # or "&", and a name stops at the next of those. Without that, regex parsing
 # would take quadratic time on input length from unknown clients.
+#
+# A value stops at the same characters, plus quotes, so that a URL inside the
+# value of another field ("url=/v1/x?api_key=...") is scanned for a key too.
 _NAME_VALUE_PAIR = re.compile(
-    r"(?<![^\s?&])(?P<name>[^\s&?=#\"']*)=(?P<value>[^&\s\"]*)"
+    r"(?<![^\s?&])(?P<name>[^\s&?=#\"']*)=(?P<value>[^&\s\"'?]*)"
 )
 
 # Backstop: anything shaped like one of our API keys, wherever it appears.

@@ -61,6 +61,31 @@ def test_redacts_a_key_when_the_name_and_the_key_prefix_are_both_encoded():
     assert redact_api_keys(text) == f"GET /v1/proposals/?%61pi_key={REDACTED} HTTP/1.1"
 
 
+@pytest.mark.parametrize(
+    "key",
+    [FAKE_KEY, f"%6E{FAKE_KEY[1:]}"],
+    ids=["plain key", "encoded key prefix"],
+)
+def test_redacts_a_url_inside_the_value_of_another_field(key):
+    text = f"request failed url=/v1/admin/validate?api_key={key} status=401"
+    assert redact_api_keys(text) == (
+        f"request failed url=/v1/admin/validate?api_key={REDACTED} status=401"
+    )
+
+
+def test_redacts_a_quoted_url_and_keeps_the_closing_quote():
+    text = f"for url 'https://api.example/v1/x?api_key=%6E{FAKE_KEY[1:]}' failed"
+    assert redact_api_keys(text) == (
+        f"for url 'https://api.example/v1/x?api_key={REDACTED}' failed"
+    )
+
+
+def test_a_value_that_contains_a_question_mark_is_redacted_up_to_it():
+    # Our keys are hex, so they never contain "?"
+    text = "/v1/proposals/?api_key=abc?def&x=1"
+    assert redact_api_keys(text) == f"/v1/proposals/?api_key={REDACTED}?def&x=1"
+
+
 def test_does_not_decode_the_name_twice():
     # FastAPI decodes once, so this name is "%61pi_key" and does not authenticate
     text = "/v1/proposals/?%2561pi_key=value"
