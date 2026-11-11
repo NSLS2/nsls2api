@@ -5,6 +5,8 @@ filters:
     "()": asgi_correlation_id.CorrelationIdFilter
     uuid_length: 16
     default_value: '-'
+  redact_api_key:
+    "()": nsls2api.infrastructure.logging.RedactApiKeyFilter
 formatters:
   default:
     "()": uvicorn.logging.DefaultFormatter
@@ -21,12 +23,14 @@ handlers:
     class: logging.StreamHandler
     filters: 
       - correlation_id
+      - redact_api_key
     stream: ext://sys.stderr
   access:
     formatter: access
     class: logging.StreamHandler
     filters: 
       - correlation_id
+      - redact_api_key
     stream: ext://sys.stdout
 loggers:
   uvicorn.error:
