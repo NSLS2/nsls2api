@@ -41,6 +41,22 @@ directory as the json files).
 3. Ensure that you have the `bnlroot.crt` file (which is deployed to all BNL managed machines) in the location specified
    within the `.env` file.
 
+### Logging to Loki
+
+When started with `uvicorn_log_config.yml` (as the container is), application (`uvicorn.error`) logs can also be pushed to
+[Grafana Loki](https://grafana.com/oss/loki/) with [`loki-logger-handler`](https://pypi.org/project/loki-logger-handler/).
+Access logs are not currently pushed to Loki.
+This is off unless both `LOKI_URL` and `LOKI_PUSH_SECRET` are set (in the environment or the `.env` file); leave them
+unset for local development.
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `LOKI_URL` | (empty) | Loki push URL |
+| `LOKI_PUSH_SECRET` | (empty) | Value of the `loki-push-secret` header |
+| `LOKI_JOB` | `nsls2api` | `job` and `service_name` labels |
+| `LOKI_ENVIRONMENT` | (empty) | `environment` label, e.g. `production` or `development` |
+| `LOKI_HOST` | the hostname | `host` label |
+
 ### Code Style
 
 This project uses `ruff` to format the code - in order to run the formatter simply type:

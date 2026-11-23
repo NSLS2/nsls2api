@@ -378,5 +378,5 @@ def test_uvicorn_log_config_applies_the_filter_to_every_handler():
         RedactApiKeyFilter
     )
 
-    for handler in ("default", "access"):
-        assert "redact_api_key" in config["handlers"][handler]["filters"]
+    for handler in config["handlers"].values():
+        assert "redact_api_key" in handler["filters"]

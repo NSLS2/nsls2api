@@ -2,7 +2,7 @@ import os
 from functools import lru_cache
 from pathlib import Path
 
-from pydantic import Field, HttpUrl, MongoDsn
+from pydantic import Field, HttpUrl, MongoDsn, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from nsls2api.infrastructure.logging import logger
@@ -65,6 +65,14 @@ class Settings(BaseSettings):
     # PASS settings
     pass_api_key: str
     pass_api_url: HttpUrl = "https://passservices.bnl.gov/passapi"
+
+    # Loki settings: logs are pushed only when loki_url and loki_push_secret are set
+    # (see nsls2api.infrastructure.loki)
+    loki_url: str = ""
+    loki_push_secret: SecretStr = SecretStr("")
+    loki_job: str = "nsls2api"
+    loki_environment: str = ""
+    loki_host: str = ""
 
     model_config = SettingsConfigDict(
         env_file=str(Path(__file__).parent.parent / ".env"),

@@ -9,6 +9,7 @@ httpx
 httpx-socks[asyncio]
 jinja2
 jinja-partials
+loki-logger-handler==1.1.2
 n2snusertools
 passlib
 prometheus-fastapi-instrumentator
@@ -16,6 +17,7 @@ pydantic
 pydantic-settings
 pymongo
 python-multipart
+requests
 rich
 slack-sdk
 slack-bolt

@@ -22,7 +22,7 @@ def create_connection_string(
 
 
 async def init_connection(mongodb_dsn: MongoDsn):
-    logger.info(f"Attempting to connect to {click.style(str(mongodb_dsn), fg='green')}")
+    logger.info("Attempting to connect to MongoDB.")
 
     client = AsyncMongoClient(
         mongodb_dsn.unicode_string(), uuidRepresentation="standard"

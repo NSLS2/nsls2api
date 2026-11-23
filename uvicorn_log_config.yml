@@ -32,11 +32,18 @@ handlers:
       - correlation_id
       - redact_api_key
     stream: ext://sys.stdout
+  # Pushes to Loki when LOKI_URL and LOKI_PUSH_SECRET are set; otherwise does nothing.
+  loki:
+    "()": nsls2api.infrastructure.loki.loki_handler
+    filters:
+      - correlation_id
+      - redact_api_key
 loggers:
   uvicorn.error:
     level: INFO
     handlers:
       - default
+      - loki
     propagate: no
   uvicorn.access:
     level: INFO
