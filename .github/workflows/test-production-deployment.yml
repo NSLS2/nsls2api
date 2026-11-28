@@ -31,11 +31,11 @@ jobs:
       uses: actions/setup-java@v5
       with:
         distribution: 'zulu'
-        java-version: '21'
+        java-version: '25'
         settings-path: ${{ github.workspace }}  # Create settings.xml here
     
     - name: Download ijhttp.zip 
-      run: curl -f -L -o ijhttp.zip "https://jb.gg/ijhttp/latest"
+      run: curl -f -L -o ijhttp.zip "https://download.jetbrains.com/resources/intellij/http-client/263.7307.353/intellij-http-client.zip"
 
     - name: Unzip ijhttp.zip
       run: unzip -q ijhttp.zip
